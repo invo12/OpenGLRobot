@@ -1,0 +1,2 @@
+glGenBuffers(1, &VBO) - genereaza buffer-ul si iti intoarce id-ul in VBO
+glBindBuffer(GL_ARRAY_BUFFER, VBO) - spui ca VBO e de tipul GL_ARRAY_BUFFER

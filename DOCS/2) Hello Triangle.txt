@@ -1,0 +1,5 @@
+Vertex shader transforma din 3D in 2D, iar fragment se ocupa de colorarea pixelilor.
+Un vertex e o colectie de date asociata unei coordonate 3D. Pozitie, culoare etc
+
+Vertex Buffer Objects(VBO) - in loc sa trimiti vertex cu vertex, trimiti un buffer intreg
+Are tipul GL_ARRAY_BUFFER

@@ -1,3 +1,4 @@
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <string>
@@ -5,6 +6,7 @@
 using namespace std;
 
 float* vertices;
+unsigned int VBO;
 
 //in document nu pui f sau ,
 void initializeVertexArray(string path) {
@@ -29,7 +31,10 @@ void initializeVertexArray(string path) {
 		cout << endl;
 	}
 }
-
+void initBuffers() 
+{
+	glGenBuffers(1, &VBO);
+}
 #pragma region GLFW Input & Callbacks
 
 //resize render area after you resize the window
@@ -66,6 +71,7 @@ int main()
 	}
 	glfwMakeContextCurrent(window);
 	glViewport(0, 0, 800, 600);
+	glewInit();
 
 	//callback on resize
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -74,6 +80,11 @@ int main()
 	//AICI INITIALIZAM ARRAY-UL DE VERTICES
 	///////////////////////////////////////
 	initializeVertexArray("triunghi.txt");
+	
+	///////////////////////////////////////
+	//AICI INITIALIZAM BUFFERELE///////////
+	///////////////////////////////////////
+	initBuffers();
 
 	//keep the window open
 	while (!glfwWindowShouldClose(window))
