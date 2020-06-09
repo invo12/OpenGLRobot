@@ -6,40 +6,21 @@
 #include <fstream>
 
 #include "Shader.h"
+#include "stb_image.h"
 using namespace std;
 
 float vertices[] = {
 	// positions         // colors
-	 0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
-	-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
-	 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
+	 0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f,   // bottom right
+	-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, 0.0f, 0.0f,   // bottom left
+	 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f, 0.5f, 1.0f    // top 
 };
 unsigned int VBO, VAO;
 Shader* basicShader;
+unsigned int grassTexture, brickTexture;
 
 bool wireframe = false;
-
-#pragma region Load din fisiere
-
-//in document nu pui f sau ,
-//void initializeVertexArrayFromFile(string path) {
-//	long long m,n;
-//	ifstream f(path);
-//	
-//	f >> m >> n;
-//	vertices = new float[m*n];
-//	for (int i = 0; i < m; ++i)
-//	{
-//		for (int j = 0; j < n; ++j) 
-//		{
-//			f >> vertices[i * n + j];
-//		}
-//	}
-//	f.close();
-//}
-
-
-#pragma endregion
+bool grass = true;
 
 #pragma region Initializari
 
@@ -58,15 +39,64 @@ void initBuffers()
 
 	//seteaza atributele
 	//pozitia
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
 	//culoarea
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3* sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3* sizeof(float)));
 	glEnableVertexAttribArray(1);
+
+	//textura
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+
 	//dai unbind
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+}
+
+void initTextures()
+{
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load("grassTexture.jpg", &width, &height, &nrChannels, 0);
+
+	glGenTextures(1, &grassTexture);
+
+	//setari 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, grassTexture);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		cout << "Nu am putut incarca textura";
+	}
+	stbi_image_free(data);
+
+	//unbind
+	glBindTexture(GL_TEXTURE_2D, 0);
+	
+	//brick texture
+	glGenTextures(1, &brickTexture);
+
+
+	glBindTexture(GL_TEXTURE_2D, brickTexture);
+	data = stbi_load("brickTexture.jpg", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		cout << "Nu am putut incarca textura";
+	}
+	stbi_image_free(data);
 }
 
 #pragma endregion
@@ -80,21 +110,26 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
-
-void processInput(GLFWwindow* window)
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	//if the user presses ESC then close the app
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
-	//schimba din normal in wireframe
-	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+	if (key == GLFW_KEY_2 && action == GLFW_PRESS)
 	{
-		if(!wireframe)
+		swap(grassTexture, brickTexture);
+	}
+	if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+	{
+		if (!wireframe)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		else
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		wireframe = !wireframe;
 	}
+}
+void processInput(GLFWwindow* window)
+{
+	//if the user presses ESC then close the app
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
 }
 
 #pragma endregion
@@ -104,6 +139,12 @@ void processInput(GLFWwindow* window)
 void draw()
 {
 	basicShader->use();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, grassTexture);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, brickTexture);
+
+	basicShader->setInt("texture2", 1);
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 }
@@ -132,6 +173,7 @@ int main()
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glewInit();
 
+	glfwSetKeyCallback(window, key_callback);
 	///////////////////////////////////////
 	//AICI INITIALIZAM ARRAY-UL DE VERTICES
 	///////////////////////////////////////
@@ -141,6 +183,7 @@ int main()
 	//AICI INITIALIZAM BUFFERELE///////////
 	///////////////////////////////////////
 	initBuffers();
+	initTextures();
 	basicShader = new Shader("vertex.vert","fragment.frag");
 	//keep the window open
 	while (!glfwWindowShouldClose(window))

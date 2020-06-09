@@ -30,3 +30,4 @@ DACA VREI SA DAI UPDATE LA UN UNIFORM TREBUIE SA APELEZI INTIAI glUseProgram();
 ///////////////////////////
 ///////////////////////////
 
+trebuie sa ai acelasi nume si tip de out/in pt vertex/fragment ca sa le lege OpenGL

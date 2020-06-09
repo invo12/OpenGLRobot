@@ -18,3 +18,14 @@ glDrawElements(mod, nr de vertex-uri de desenat, tipul de valori, offsetul indic
 int location = glGetUniformLocation(shaderProgram, "ourColor");	- identifici variabila uniforma cu numele ourColor
 glUniform4f(location,1,2,3,4) - C nu suporta overloading si de aia numele e cu 4f in functie de ce vrei sa dai ca parametri
 							  - se poate si cu fv (float vectors)
+
+
+
+stbi_load(nume, width, height, nr de channel-uri, 0) - incarci textura
+glTexImage2D(target/GL_TEXTURE_2D, levelul din mipmap 0 pt originala, formatul intern/RGB, lungimea, inaltimea
+			 border care trb sa fie 0, formatul pixelilor/RGB, tipul pixelilor, pointer la imagine in memorie);
+glGenerateMipMap(GL_TEXTURE_2D);
+glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
+mix(texture(texture1, TexCoord), texture(texture2, TexCoord), 0.2); in fragment shader interpoleaza liniar intre prima si a doua textura, 
+																	80% din prima, 20% a doua
+stbi_set_flip_vertically_on_load(true); dai flip la imagine cand o incarci in memorie 
