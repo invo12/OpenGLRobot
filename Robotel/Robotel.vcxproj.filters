@@ -24,6 +24,9 @@
     <ClCompile Include="STB.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="triunghi.txt">
@@ -44,6 +47,9 @@
     </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

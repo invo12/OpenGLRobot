@@ -8,6 +8,7 @@
 #include <fstream>
 
 #include "Shader.h"
+#include "Camera.h"
 #include "stb_image.h"
 using namespace std;
 
@@ -67,23 +68,17 @@ glm::vec3 cubePositions[] = {
 		glm::vec3(-1.3f,  1.0f, -1.5f)
 };
 
-//camera
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);		//position of camera
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);	//direction of camera
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);		//up of camera used to determine right of camera
+Camera* mainCamera;
+
+float screenWidth = 800, screenHeight = 600;
 
 //for speed normalization
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
-float speed = 2.5f;
 
 //for rotation of camera
-float yaw = -90.0f, pitch = 0;
 float lastX = 400, lastY = 300;
 bool firstMouse = true;
-
-//zoom of camera
-float fov = 45;
 
 unsigned int VBO, VAO;
 Shader* basicShader;
@@ -175,10 +170,10 @@ void initTextures()
 #pragma region GLFW Input & Callbacks
 
 //resize render area after you resize the window
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
+	screenWidth = width;
+	screenHeight = height;
 	glViewport(0, 0, width, height);
 }
 
@@ -215,26 +210,12 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos)
 	lastX = xPos;
 	lastY = yPos;
 
-	const float sensitivity = 0.1f;
-	xOffset *= sensitivity;
-	yOffset *= sensitivity;
-
-	yaw += xOffset;
-	pitch += yOffset;
-
-	if (pitch > 89.0f)
-		pitch = 89.0f;
-	if (pitch < -89.0f)
-		pitch = -89.0f;
+	mainCamera->ProcessMouseMovement(xOffset, yOffset);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	fov -= (float)yoffset;
-	if (fov < 1.0f)
-		fov = 1.0f;
-	if (fov > 45.0f)
-		fov = 45.0f;
+	mainCamera->ProcessMouseScroll(yoffset);
 }
 
 void processInput(GLFWwindow* window)
@@ -248,13 +229,13 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		cameraPos += cameraSpeed * cameraFront;
+		mainCamera->ProcessKeyboard(FORWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		cameraPos -= cameraSpeed * cameraFront;
+		mainCamera->ProcessKeyboard(BACKWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		mainCamera->ProcessKeyboard(LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		mainCamera->ProcessKeyboard(RIGHT, deltaTime);
 }
 
 #pragma endregion
@@ -295,16 +276,10 @@ void draw()
 	//glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
 
 	//ce ai facut mai sus poti face prin lookAt
-	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-
-	glm::vec3 direction;
-	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	direction.y = sin(glm::radians(pitch));
-	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	cameraFront = glm::normalize(direction);
+	glm::mat4 view = mainCamera->GetViewMatrix();
 
 	glm::mat4 projection;
-	projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
+	projection = glm::perspective(glm::radians(mainCamera->zoom), screenWidth / screenHeight, 0.1f, 100.0f);
 
 
 	//set uniform variables
@@ -341,7 +316,7 @@ int main()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-	GLFWwindow* window = glfwCreateWindow(800, 600, "Robotel", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, "Robotel", NULL, NULL);
 	if (window == NULL)
 	{
 		cout << "Failed to create GLFW window" << std::endl;
@@ -369,6 +344,7 @@ int main()
 	initBuffers();
 	initTextures();
 	basicShader = new Shader("vertex.vert","fragment.frag");
+	mainCamera = new Camera();
 	//keep the window open
 	while (!glfwWindowShouldClose(window))
 	{
@@ -394,6 +370,7 @@ int main()
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	delete basicShader;
+	delete mainCamera;
 	glfwTerminate();
 	return 0;
 
