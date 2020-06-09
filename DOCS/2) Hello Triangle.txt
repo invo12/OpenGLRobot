@@ -2,5 +2,10 @@ Vertex shader transforma din 3D in 2D, iar fragment se ocupa de colorarea pixeli
 Un vertex e o colectie de date asociata unei coordonate 3D. Pozitie, culoare etc
 
 Vertex Buffer Objects(VBO) - in loc sa trimiti vertex cu vertex, trimiti un buffer intreg
-Are tipul GL_ARRAY_BUFFER.
-Poti da bind la un singur buffer din tipul respectiv, dar la mai multe simultan daca au tip diferit
+	Are tipul GL_ARRAY_BUFFER.
+	Poti da bind la un singur buffer din tipul respectiv, dar la mai multe simultan daca au tip diferit
+
+Vertex Array Object(VAO) - retine VBO + configurarile pe care le-am facut(atributele). E un fel de closure
+	Retine apelurile glEnableVertexAttribArray si glDisableVertexAttribArray
+	Retine configurarile facute cu glVertexAttribPointer
+	VBO-urile asociate prin apelurile atributelor

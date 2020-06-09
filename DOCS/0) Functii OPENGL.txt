@@ -1,6 +1,12 @@
 glGenBuffers(1, &VBO) - genereaza buffer-ul si iti intoarce id-ul in VBO
 glBindBuffer(GL_ARRAY_BUFFER, VBO) - spui ca VBO e de tipul GL_ARRAY_BUFFER
 glBufferData(tip, dimensiune in bytes, array din care pui,mod utilizare) - pui date in buffer
-#modul poate fi: GL_STREAM_DRAW, data e setata odata si folosita de GPU de cateva ori
+	#modul poate fi: GL_STREAM_DRAW, data e setata odata si folosita de GPU de cateva ori
 				 GL_STATIC_DRAW, data e setata odata si folosita de multe ori
 				 GL_DYNAMIC_DRAW, data se schimba frecvent si e folosita de multe ori
+glVertexAttribPointer(indexul atributului, nr de componente per atribut intre 1 si 4,tipul fiecarei componente,
+					  normalizat de obicei GL_FALSE, stride adica nr de octeti pana la urmatorul atribut de acest fel,
+					  offset-ul de la prima aparitie a atributului)
+	#indexul e folosit la vertexShader cand specifici layout(location = index)
+glEnableVertexAttribArray(index) - activeaza atributul configurat anterior
+glDrawArrays(mod, primul index, numarul de vertexuri pe care vrei sa-l desenezi);

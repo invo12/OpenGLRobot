@@ -5,36 +5,32 @@
 #include <fstream>
 using namespace std;
 
-float* vertices;
-unsigned int VBO;
+float vertices[] = {
+		-0.5f, -0.5f, 0.0f, // left  
+		 0.5f, -0.5f, 0.0f, // right 
+		 0.0f,  0.5f, 0.0f  // top   
+};
+unsigned int VBO, VAO;
 unsigned int shaderProgram;
 
 #pragma region Load din fisiere
 
 //in document nu pui f sau ,
-void initializeVertexArrayFromFile(string path) {
-	long long m,n;
-	ifstream f(path);
-	
-	f >> m >> n;
-	vertices = new float[m*n];
-	for (int i = 0; i < m; ++i)
-	{
-		for (int j = 0; j < n; ++j) 
-		{
-			f >> vertices[i * n + j];
-		}
-	}
-	for (int i = 0; i < m; ++i)
-	{
-		for (int j = 0; j < n; ++j)
-		{
-			cout << vertices[i * n + j]<<' ';
-		}
-		cout << endl;
-	}
-	f.close();
-}
+//void initializeVertexArrayFromFile(string path) {
+//	long long m,n;
+//	ifstream f(path);
+//	
+//	f >> m >> n;
+//	vertices = new float[m*n];
+//	for (int i = 0; i < m; ++i)
+//	{
+//		for (int j = 0; j < n; ++j) 
+//		{
+//			f >> vertices[i * n + j];
+//		}
+//	}
+//	f.close();
+//}
 
 char* loadShaderFromFile(string path)
 {
@@ -52,10 +48,28 @@ char* loadShaderFromFile(string path)
 }
 #pragma endregion
 
+#pragma region Initializari
+
 void initBuffers() 
-{
+{	
+	//genereaza bufferele necesare
+	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
+
+	//bind vertex array
+	glBindVertexArray(VAO);
+
+	//pune in buffer informatiile
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	//seteaza atributele
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	//dai unbind
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 }
 
 void initShaders()
@@ -86,6 +100,7 @@ void initShaders()
 	//initializeaza fragment shader
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	const char* fragmentShaderSource = loadShaderFromFile("fragment.frag");
+	cout << fragmentShaderSource;
 	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 	glCompileShader(fragmentShader);
 
@@ -112,6 +127,9 @@ void initShaders()
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 }
+
+#pragma endregion
+
 #pragma region GLFW Input & Callbacks
 
 //resize render area after you resize the window
@@ -131,13 +149,25 @@ void processInput(GLFWwindow* window)
 
 #pragma endregion
 
+#pragma region Desenare
+
+void draw()
+{
+	glUseProgram(shaderProgram);
+	glBindVertexArray(VAO);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+
+#pragma endregion
+
+
 int main()
 {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
 	GLFWwindow* window = glfwCreateWindow(800, 600, "Robotel", NULL, NULL);
 	if (window == NULL)
@@ -147,23 +177,22 @@ int main()
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
-	glViewport(0, 0, 800, 600);
-	glewInit();
 
 	//callback on resize
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	
+	glewInit();
+
 	///////////////////////////////////////
 	//AICI INITIALIZAM ARRAY-UL DE VERTICES
 	///////////////////////////////////////
-	initializeVertexArrayFromFile("triunghi.txt");
+	//initializeVertexArrayFromFile("triunghi.txt");
 	
 	///////////////////////////////////////
 	//AICI INITIALIZAM BUFFERELE///////////
 	///////////////////////////////////////
-	initBuffers();
 	initShaders();
-	glUseProgram(shaderProgram);
+	initBuffers();
+
 	//keep the window open
 	while (!glfwWindowShouldClose(window))
 	{
@@ -173,7 +202,7 @@ int main()
 		//rendering
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-
+		draw();
 
 		//call events and swap buffers
 		glfwSwapBuffers(window);
@@ -182,9 +211,12 @@ int main()
 	///////////////////////////////////////
 	//AICI DEALOCAM ARRAY-UL DE VERTICES
 	///////////////////////////////////////
-	delete[] vertices;
+
 
 	//dealocate resources
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteProgram(shaderProgram);
 	glfwTerminate();
 	return 0;
 
