@@ -70,8 +70,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\facultate\PROIECT_SPG\DEPENDENTE\glew\include;D:\facultate\PROIECT_SPG\DEPENDENTE\glfw\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\facultate\PROIECT_SPG\DEPENDENTE\glew\lib\Release\x64;D:\facultate\PROIECT_SPG\DEPENDENTE\glfw\lib-vc2019;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\DEPENDENTE\glew\include;..\DEPENDENTE\glfw\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\DEPENDENTE\glew\lib\Release\x64;..\DEPENDENTE\glfw\lib-vc2019;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -93,7 +93,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>D:\facultate\PROIECT_SPG\DEPENDENTE\glew\lib\Release\x64;D:\facultate\PROIECT_SPG\DEPENDENTE\glfw\lib-vc2019;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\DEPENDENTE\glew\lib\Release\x64;..\DEPENDENTE\glfw\lib-vc2019;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;glew32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

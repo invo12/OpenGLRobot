@@ -102,7 +102,6 @@ void initShaders()
 	//initializeaza fragment shader
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	const char* fragmentShaderSource = loadShaderFromFile("fragment.frag");
-	cout << fragmentShaderSource;
 	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 	glCompileShader(fragmentShader);
 
