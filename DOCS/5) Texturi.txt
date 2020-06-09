@@ -7,3 +7,4 @@ Mipmap - texturi din ce in ce mai mici pentru a le avea la diverse distante.
 Pt fragment shader exista tipul sampler2D care e pentru texturi;
 Pentru a aplica mai multe texturi la un shader trebuie sa activezi intai cu glActiveTexture(GL_TEXTURE1); si apoi sa dai bind
 Active->bind, active->bind.... si dupa trebuie sa specifici explicit care e care, setezi variabilele uniforme din fragment
+

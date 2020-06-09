@@ -1,0 +1,42 @@
+Exista 5 sisteme relevante
+	- Local(obiect)	relative la obiect
+	- World			relative la originea lumii(mistic)
+	- View			cum sunt vazute de o camera
+	- Clip			adauga perspectiva
+	- Screen		transforma -1,1 relativ la dimensiunile date de glViewport
+
+Coordonatele vertex pornesc de la local apoi sunt procesate ca coordonate globale(model), view(view matrix), clip(projection matrix) si 
+dupa  care se aplica viewport transform si ajung in screen space
+
+Model matrix te duce din local in world
+View matrix te duce din world doar la nivelul camerei (taie din mapa)
+Projection matrix taie din ce vede camera si nu randeaza ce cade in afara zonei.
+Putem avea o matrice de proiectie ortografica, sau una de proiectie.
+
+
+
+La ortografic definesti lungimea planului, inaltimea si adancimea lui.
+Frustumul e definit de lungime inaltime si un plan apropiat si unul indepartat.
+Mapeaza direct toate coordonatele din frustum la coordonatele normalizate ale device-ului.
+W ramane 1.
+Ca sa creezi o proiectie ortografica folosesti glm::ortho(0,800,0,600,0.1,100);
+											 (left,right, bottom, top, near, far planes);
+Nu e prea realista( merge la jocuri 2D si cam atat)
+
+
+
+La perspectiva, cu cat esti mai departe de camera cu atat creste w.
+Se imparte vectorul la w, si cu cat esti mai departe cu atat valoarea e mai mica.
+Ca sa creezi perspectiva: glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 100f);
+										(fov - field of view de obicei 45deg, aspect ratio, near, far planes);
+			
+			
+			
+Toate matricile de mai sus se combina intr-una singura astfel
+Vclip = Mproictie * Mview * Mmodel * Vlocal
+
+
+Ca sa nu se randeze pixeli unii peste altii folosesti Z-Buffer
+Fiecare fragment are in el o valoare z. 
+OpenGL compara valoarea asta cu oricare se suprapune si il randeaza pe ala cu val z cea mai mare
+Procedeul se cheama depth testing si trb activat cu glEnable.
