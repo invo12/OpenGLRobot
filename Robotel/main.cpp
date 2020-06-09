@@ -1,6 +1,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -21,7 +23,7 @@ unsigned int grassTexture, brickTexture;
 
 bool wireframe = false;
 bool grass = true;
-
+float angle = 0;
 #pragma region Initializari
 
 void initBuffers() 
@@ -124,6 +126,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		wireframe = !wireframe;
 	}
+	if (key == GLFW_KEY_R && action == GLFW_PRESS)
+	{
+		angle = (int)(angle + 10) % 360;
+	}
 }
 void processInput(GLFWwindow* window)
 {
@@ -138,13 +144,23 @@ void processInput(GLFWwindow* window)
 
 void draw()
 {
+	//program
 	basicShader->use();
+	
+	//texturare
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, grassTexture);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, brickTexture);
 
 	basicShader->setInt("texture2", 1);
+	
+	//transformari
+	glm::mat4 trans = glm::mat4(1.0f);
+	trans = glm::rotate(trans, glm::radians(angle), glm::vec3(0.0, 0.0, 1.0));
+	trans = glm::scale(trans, glm::vec3(2, 2, 2));
+	unsigned int transformLoc = glGetUniformLocation(basicShader->id, "transform");
+	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 }

@@ -1,2 +1,3 @@
 ﻿  main.cpp
+D:\facultate\PROIECT_SPG\Robotel\main.cpp(131,29): warning C4244:  '=': conversion from 'int' to 'float', possible loss of data
   Robotel.vcxproj -> D:\facultate\PROIECT_SPG\Robotel\x64\Debug\Robotel.exe

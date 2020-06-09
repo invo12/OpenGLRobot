@@ -1,0 +1,48 @@
+Scalare:
+sx 0 0 0
+0 sy 0 0
+0 0 sz 0
+0 0	 0 1
+
+
+
+Rotatie:
+in jurul lui OX:
+1 0 	0 	 0
+0 cost -sint 0
+0 sint cost  0
+0 0		0	 1
+
+in jurul lui OY:
+cost  0  sint 0
+0	  1  0	  0
+-sint 0 cost  0
+0 	  0	 0	  1
+
+
+
+Translare:
+1 0 0 tx
+0 1 0 ty
+0 0 1 tz
+0 0 0 1
+
+cand w e 0 vectorul se numeste directie, fiindca nu poate fi translat
+operatiile se fac in ordinea: scalare->rotatie->translatie (de la dreapta la stanga)
+TRS * v
+
+
+
+glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);	definim un vector
+glm::mat4 trans = glm::mat4(1.0f);		definim I4
+trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));	creem matricea de translare, dreapta cu 1 si sus cu 1
+vec = trans * vec;
+std::cout << vec.x << vec.y << vec.z << std::endl;
+
+
+
+
+trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));	rotim cu 90 de grade in jurul axei OZ
+trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5)); 						scalam cu 0.5 pe toate directiile
+
+OPERATIILE SE CITESC DE JOS IN SUS
