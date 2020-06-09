@@ -5,15 +5,17 @@
 #include <string>
 #include <fstream>
 
+#include "Shader.h"
 using namespace std;
 
 float vertices[] = {
-		-0.5f, -0.5f, 0.0f, // left  
-		 0.5f, -0.5f, 0.0f, // right 
-		 0.0f,  0.5f, 0.0f  // top   
+	// positions         // colors
+	 0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
+	-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
+	 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
 };
 unsigned int VBO, VAO;
-unsigned int shaderProgram;
+Shader* basicShader;
 
 bool wireframe = false;
 
@@ -36,20 +38,7 @@ bool wireframe = false;
 //	f.close();
 //}
 
-char* loadShaderFromFile(string path)
-{
-	string text;
-	string line;
-	ifstream f(path);
-	while (getline(f, line)) {
-		text += line + '\n';
-	}
-	f.close();
-	char* tmp = new char[text.size() + 1];
-	copy(text.begin(), text.end(), tmp);
-	tmp[text.size()] = '\0';
-	return tmp;
-}
+
 #pragma endregion
 
 #pragma region Initializari
@@ -68,67 +57,16 @@ void initBuffers()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	//seteaza atributele
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	//pozitia
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
+	//culoarea
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3* sizeof(float)));
+	glEnableVertexAttribArray(1);
 	//dai unbind
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-}
-
-void initShaders()
-{
-	//shaders
-	unsigned int vertexShader;
-	unsigned int fragmentShader;
-	//error handling
-	int  success;
-	char infoLog[512];
-	
-	//initializeaza vertex shader
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	const char* vertexShaderSource = loadShaderFromFile("vertex.vert");
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-	
-	//nu uita sa dealoci
-	delete[] vertexShaderSource;
-	
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-
-	//initializeaza fragment shader
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	const char* fragmentShaderSource = loadShaderFromFile("fragment.frag");
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-
-	//nu uita sa dealoci
-	delete[] fragmentShaderSource;
-
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		cout << "EROARE LA LINK" << endl;
-	}
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
 }
 
 #pragma endregion
@@ -165,7 +103,7 @@ void processInput(GLFWwindow* window)
 
 void draw()
 {
-	glUseProgram(shaderProgram);
+	basicShader->use();
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 }
@@ -202,9 +140,8 @@ int main()
 	///////////////////////////////////////
 	//AICI INITIALIZAM BUFFERELE///////////
 	///////////////////////////////////////
-	initShaders();
 	initBuffers();
-
+	basicShader = new Shader("vertex.vert","fragment.frag");
 	//keep the window open
 	while (!glfwWindowShouldClose(window))
 	{
@@ -228,7 +165,7 @@ int main()
 	//dealocate resources
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
-	glDeleteProgram(shaderProgram);
+	delete basicShader;
 	glfwTerminate();
 	return 0;
 

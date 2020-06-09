@@ -1,0 +1,32 @@
+#version numar_versiune
+in type nume_variabila_in
+out type nume_variabila_out
+uniform type nume_variabila_uniforma
+
+void main()
+{
+	//cod
+	nume_variabila_out = ce_am_procesat
+}
+
+
+Vertex shader - fiecare variabila de input reprezinta un atribut vertex
+
+type = int/float/double/uint/bool
+	 = vecn		// cu n = 1-4, vector de floats
+	 = bvecn	//vector de bool
+	 = ivecn/uvecn/dvecn
+poti accesa componentele vectorilor cu .x, .y, .z, .xyz, .xyxx etc
+
+uniform e global, e unica per shader program si poate fi accesat de orice shader la orice stadiu
+
+///////////////////////////
+///////////////////////////
+///////////////////////////
+///////////////////////////
+DACA VREI SA DAI UPDATE LA UN UNIFORM TREBUIE SA APELEZI INTIAI glUseProgram();
+///////////////////////////
+///////////////////////////
+///////////////////////////
+///////////////////////////
+

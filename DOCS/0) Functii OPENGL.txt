@@ -12,3 +12,9 @@ glEnableVertexAttribArray(index) - activeaza atributul configurat anterior
 glDrawArrays(mod, primul index, numarul de vertexuri pe care vrei sa-l desenezi);
 glDrawElements(mod, nr de vertex-uri de desenat, tipul de valori, offsetul indicilor);
 	#se foloseste dupa ce ai pus glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	
+
+
+int location = glGetUniformLocation(shaderProgram, "ourColor");	- identifici variabila uniforma cu numele ourColor
+glUniform4f(location,1,2,3,4) - C nu suporta overloading si de aia numele e cu 4f in functie de ce vrei sa dai ca parametri
+							  - se poate si cu fv (float vectors)
