@@ -1,5 +1,36 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <string>
+#include <fstream>
+using namespace std;
+
+float* vertices;
+
+//in document nu pui f sau ,
+void initializeVertexArray(string path) {
+	long long m,n;
+	ifstream f(path);
+	
+	f >> m >> n;
+	vertices = new float[m*n];
+	for (int i = 0; i < m; ++i)
+	{
+		for (int j = 0; j < n; ++j) 
+		{
+			f >> vertices[i * n + j];
+		}
+	}
+	for (int i = 0; i < m; ++i)
+	{
+		for (int j = 0; j < n; ++j)
+		{
+			cout << vertices[i * n + j]<<' ';
+		}
+		cout << endl;
+	}
+}
+
+#pragma region GLFW Input & Callbacks
 
 //resize render area after you resize the window
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -16,6 +47,8 @@ void processInput(GLFWwindow* window)
 		glfwSetWindowShouldClose(window, true);
 }
 
+#pragma endregion
+
 int main()
 {
 	glfwInit();
@@ -27,7 +60,7 @@ int main()
 	GLFWwindow* window = glfwCreateWindow(800, 600, "Robotel", NULL, NULL);
 	if (window == NULL)
 	{
-		std::cout << "Failed to create GLFW window" << std::endl;
+		cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
@@ -37,6 +70,11 @@ int main()
 	//callback on resize
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	
+	///////////////////////////////////////
+	//AICI INITIALIZAM ARRAY-UL DE VERTICES
+	///////////////////////////////////////
+	initializeVertexArray("triunghi.txt");
+
 	//keep the window open
 	while (!glfwWindowShouldClose(window))
 	{
@@ -52,7 +90,11 @@ int main()
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-	
+	///////////////////////////////////////
+	//AICI DEALOCAM ARRAY-UL DE VERTICES
+	///////////////////////////////////////
+	delete[] vertices;
+
 	//dealocate resources
 	glfwTerminate();
 	return 0;

@@ -1,0 +1,2 @@
+Vertex shader transforma din 3D in 2D, iar fragment se ocupa de colorarea pixelilor.
+Un vertex e o colectie de date asociata unei coordonate 3D. Pozitie, culoare etc
