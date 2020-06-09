@@ -10,3 +10,5 @@ glVertexAttribPointer(indexul atributului, nr de componente per atribut intre 1 
 	#indexul e folosit la vertexShader cand specifici layout(location = index)
 glEnableVertexAttribArray(index) - activeaza atributul configurat anterior
 glDrawArrays(mod, primul index, numarul de vertexuri pe care vrei sa-l desenezi);
+glDrawElements(mod, nr de vertex-uri de desenat, tipul de valori, offsetul indicilor);
+	#se foloseste dupa ce ai pus glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);

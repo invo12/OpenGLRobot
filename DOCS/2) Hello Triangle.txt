@@ -9,3 +9,5 @@ Vertex Array Object(VAO) - retine VBO + configurarile pe care le-am facut(atribu
 	Retine apelurile glEnableVertexAttribArray si glDisableVertexAttribArray
 	Retine configurarile facute cu glVertexAttribPointer
 	VBO-urile asociate prin apelurile atributelor
+	
+Element Buffer Objects(EBO) - un buffer care stocheaza indici ce ajuta OpenGL sa decida ordinea vertex-urilor

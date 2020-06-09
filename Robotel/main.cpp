@@ -13,6 +13,8 @@ float vertices[] = {
 unsigned int VBO, VAO;
 unsigned int shaderProgram;
 
+bool wireframe = false;
+
 #pragma region Load din fisiere
 
 //in document nu pui f sau ,
@@ -145,6 +147,15 @@ void processInput(GLFWwindow* window)
 	//if the user presses ESC then close the app
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+	//schimba din normal in wireframe
+	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+	{
+		if(!wireframe)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		else
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		wireframe = !wireframe;
+	}
 }
 
 #pragma endregion
