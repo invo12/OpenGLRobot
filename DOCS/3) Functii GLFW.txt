@@ -1,0 +1,4 @@
+glfwPollEvents()-> porneste listeningul pt taste,mouse
+
+glfwGetKey(GKFWwindow* window,key enum)==glfw press -> handler
+glfwSetWindowShouldClose(GLFWwindow* window,val) ->closes the widow
