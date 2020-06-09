@@ -1,0 +1,40 @@
+Ca sa ai o camera ai nevoie de 4 chestii:
+	1) Pozitia camerei
+	2) Directia camerei			(z)
+	3) Dreapta camerei 			(x)
+	4) axa verticala a camerei	(y)
+	
+1)Un vector in coordonatele lumii care arata spre pozitia camerei
+2)Un vector cu sensul invers fata de ce priveste camera
+3)Faci un vector cu directia in sus global, si faci cross product intre directie si vector ca sa obtii vect dreapta
+4)Cross product intre dreapta si directie
+
+Cu chestiile astea creezi matricea de LookAt
+
+Rx Ry Rz 0    *    1 0 0 -Px
+Ux Uy Uz 0		   0 1 0 -Py
+Dx Dy Dz 0		   0 0 1 -Pz
+0  0  0  1		   0 0 0  1
+
+se pune - la a doua matrice, fiindca daca vrei sa muti camera cu 2 unitati la dreapta, tre sa muti lumea cu 2 unitati la stanga
+
+Poti face toti pasii de mai sus cu
+glm::lookAt(vec3(pozitieCamera), vec3(targetPosition), vec3(upVector ce a fost folosit ca sa calculam rightVector))
+Din cei 3 vectori ii poti deduce pe toti ceilalti
+
+
+Pentru movement putem folosi pozitia, directia si vectorul up.
+
+
+Pentru rotatii se foloseste pitch(rotatia in jurul ox),
+							yaw(rotatia in jurul oy),
+							roll(rotatia in jurul oz)
+La camere ne intereseaza doar pitch si yaw
+Pentru desene/explicatii vezi pagina
+Miscarea orizontala a mouse-ului afecteaza yaw(te rotesti in jurul oy)
+	iar cea verticala afecteaza pitch-ul(te rotesti in jurul ox)
+Ca sa rotesti corect trebuie considerati urmatorii pasi:
+	a) calculeaza offset-ul mouse-ului de la ultimul frame
+	b) adauga offset-urile la yaw si pitch
+	c) adauga niste constraint-uri pentru valorile minime/maxime ale pitch
+	d) calculeaza vectorul directie
