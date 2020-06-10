@@ -18,16 +18,24 @@ Object::Object(std::string numeFisier)
 				switch (linieVector[0]) {
 				case 'v':
 					if (linieVector[1] == ' ') {
-						this->vertices.push_back(StringToVec3(linie));
+						glm::vec3 temp = StringToVec3(linie);
+						this->vertices.push_back(temp.x);
+						this->vertices.push_back(temp.y);
+						this->vertices.push_back(temp.z);
 						std::cout << "veritce-> " << linie << std::endl;
 					}
 					else if (linieVector[1] == 't') {
-						this->uvs.push_back(StringToVec2(linie));
+						glm::vec2 temp = StringToVec2(linie);
+						this->textureCoordinates.push_back(temp.x);
+						this->textureCoordinates.push_back(temp.y);
 						this->hasUV = true;
 						std::cout << "uvs-> " << linie << std::endl;
 					}
 					else if (linieVector[1] == 'n') {
-						this->normals.push_back(StringToVec3(linie));
+						glm::vec3 temp = StringToVec3(linie);
+						this->normals.push_back(temp.x);
+						this->normals.push_back(temp.y);
+						this->normals.push_back(temp.z);
 						this->hasNormal = true;
 						std::cout << "normale-> " << linie << std::endl;
 					}
@@ -48,17 +56,17 @@ Object::Object(std::string numeFisier)
 	}
 }
 
-std::vector<glm::vec3> Object::GetVertices()
+std::vector<float> Object::GetVertices()
 {
 	return this->vertices;
 }
 
-std::vector<glm::vec2> Object::GetUvs()
+std::vector<float> Object::GetTextureCoordinates()
 {
-	return this->uvs;
+	return this->textureCoordinates;
 }
 
-std::vector<glm::vec3> Object::GetNormals()
+std::vector<float> Object::GetNormals()
 {
 	return this->normals;
 }

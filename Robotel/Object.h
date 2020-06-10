@@ -7,26 +7,27 @@
 class Object
 {
 private:
-	std::vector<glm::vec3> vertices;
-	std::vector<glm::vec2> uvs;
-	std::vector<glm::vec3> normals;
+	std::vector<float> vertices;
+	std::vector<float> textureCoordinates;
+	std::vector<float> normals;
 	bool hasUV;
 	bool hasNormal;
+	glm::mat4 model = glm::mat4(1.0f);
 
 	glm::vec2 StringToVec2(std::string linieFisier);
 	glm::vec3 StringToVec3(std::string linieFisier);
 	unsigned int NextChrIndex(unsigned int start, const char* str, unsigned int length, char compareData);
 public:
 	Object(std::string numeFisier);
-	std::vector<glm::vec3> GetVertices();
-	std::vector<glm::vec2> GetUvs();
-	std::vector<glm::vec3> GetNormals();
-	//TODO Stack!
+	std::vector<float> GetVertices();
+	std::vector<float> GetTextureCoordinates();
+	std::vector<float> GetNormals();
+	//model matrix
+	//get model matrix
 	//Object GetModel();
 	//Translate
 	//Rotate
 	//Scale
-	//Undo
 	//bool hasUV();
 	//bool hasNormal();
 	//Draw
