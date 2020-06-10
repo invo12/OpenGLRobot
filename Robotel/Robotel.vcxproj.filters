@@ -27,28 +27,14 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="triunghi.txt">
       <Filter>Resource Files</Filter>
     </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="basicVertex.vert">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="basicFragment.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="lightVertex.vert">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="lightFragment.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="sourceLight.frag">
-      <Filter>Resource Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -60,5 +46,25 @@
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\vertex\basicVertex.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Shaders\vertex\lightVertex.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Shaders\fragment\basicFragment.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Shaders\fragment\lightFragment.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Shaders\fragment\lightSource.frag">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -1,0 +1,19 @@
+Un model de iluminare este modelul Phong si e alcatuit din 3 componente:
+	1) Ambient
+	2) Difuse
+	3) Specular
+	
+1)Cand e intuneric, obiectele tot au culoare, pentru a simula asta se foloseste ambient care e constant, da mereu aceeasi culoare.
+2)Simuleaza impactul directional al luminii pe obiect. Cu cat e orientat spre lumina cu atat devine mai deschis.
+3)Simuleaza punctul luminos in care apare lumina pe obiectele stralucitoare. Are mai mult culoarea luminii decat a obiectului.
+
+1)Ca sa obtii factorul ambiental, inmultesti lumina cu un scalar si apoi cu culoarea obiectului.
+2)Trebuie sa vezi cat e unghiul cu normala(dot product) si cu cat e mai mare unghiul cu atat are mai putin impact.
+	Vectorul normal e un versor perpendicular pe suprafata vertex-ului.
+	Ne trebuie si pozitia fragmentului la nivel global.
+	Directia razei e vectorul diferenta dintre pozitia sursei si poz fragmentului.
+	Normalizezi normala si directia;
+	
+	Ca sa poti roti/scala si sa arate realist, trebuie sa inmultesti vectorii normali cu matricea normala.
+	Matricea normala este transpusa inversei partii 3x3 din stanga sus a model matrix.
+	
