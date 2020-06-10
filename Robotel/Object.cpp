@@ -46,6 +46,7 @@ Object::Object(std::string numeFisier)
             indexBuff.push_back(face->mIndices[1]);
             indexBuff.push_back(face->mIndices[2]);
         }
+        
     }
 
     std::string importMaterialPath = numeFisier + ".mtl";
@@ -86,6 +87,7 @@ Object::Object(std::string numeFisier)
             }
         }
     }
+    this->objectTexture =new Texture(numeFisier);
 }
 
 void Object::ResetModelMatrix()
@@ -118,6 +120,25 @@ Object::Object(const Object& object)
     this->vertexBuff = object.vertexBuff;
     this->indexBuff = object.indexBuff;
     this->model = object.model;
+}
+
+Texture* Object::GetTexture()
+{
+    return objectTexture;
+}
+
+void Object::ChangeTexture(std::string path)
+{
+    if (objectTexture != nullptr) {
+        delete objectTexture;
+        objectTexture = nullptr;
+    }
+    objectTexture =new Texture(path);
+}
+
+Object::~Object()
+{
+    delete objectTexture;
 }
 
 
