@@ -2,34 +2,37 @@
 #include <vector>
 #include <string>
 #include <glm/glm.hpp>
-
+#include <fstream>
+#include <iostream>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include <assimp/matrix4x4.h>
+#include <assimp/cimport.h>
 
 class Object
 {
 private:
-	std::vector<glm::vec3> vertices;
-	std::vector<glm::vec2> textureCoordinates;
-	std::vector<glm::vec3> normals;
-	bool hasUV;
-	bool hasNormal;
+	const aiMesh* modelMesh;
 	glm::mat4 model = glm::mat4(1.0f);
 
-	glm::vec2 StringToVec2(std::string linieFisier);
-	glm::vec3 StringToVec3(std::string linieFisier);
-	unsigned int NextChrIndex(unsigned int start, const char* str, unsigned int length, char compareData);
+	std::vector<float> vertexBuff;
+	std::vector<unsigned int>indexBuff;
+
+
 public:
 	Object(std::string numeFisier);
-	std::vector<glm::vec3> GetVertices();
-	std::vector< glm::vec2 > GetTextureCoordinates();
-	std::vector<glm::vec3> GetNormals();
+	std::vector<float> GetVertexBuffer();
+	std::vector<unsigned int>GetIndexBuffer();
+	bool assimpGetMeshData(const aiMesh* mesh);
 	//model matrix
 	//get model matrix
 	//Object GetModel();
 	//Translate
 	//Rotate
 	//Scale
-	//bool hasUV();
-	//bool hasNormal();
+	//Fisier Texturi
+	//Fisier Normala
 	//Draw
 
 };
