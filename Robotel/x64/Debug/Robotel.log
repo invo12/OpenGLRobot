@@ -1,12 +1,4 @@
-﻿  Object.cpp
-D:\facultate\PROIECT_SPG\Robotel\Object.cpp(77,45): warning C4267:  'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\facultate\PROIECT_SPG\Robotel\Object.cpp(90,10): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
-D:\facultate\PROIECT_SPG\Robotel\Object.cpp(94,10): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
-D:\facultate\PROIECT_SPG\Robotel\Object.cpp(102,45): warning C4267:  'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\facultate\PROIECT_SPG\Robotel\Object.cpp(115,10): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
-D:\facultate\PROIECT_SPG\Robotel\Object.cpp(121,9): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
-  main.cpp
-D:\facultate\PROIECT_SPG\Robotel\Object.cpp(126,9): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+﻿  main.cpp
 D:\facultate\PROIECT_SPG\Robotel\main.cpp(196,16): warning C4244:  '=': conversion from 'int' to 'float', possible loss of data
 D:\facultate\PROIECT_SPG\Robotel\main.cpp(197,17): warning C4244:  '=': conversion from 'int' to 'float', possible loss of data
 D:\facultate\PROIECT_SPG\Robotel\main.cpp(217,29): warning C4244:  '=': conversion from 'int' to 'float', possible loss of data
@@ -18,7 +10,21 @@ D:\facultate\PROIECT_SPG\Robotel\main.cpp(231,10): warning C4244:  '=': conversi
 D:\facultate\PROIECT_SPG\Robotel\main.cpp(232,10): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
 D:\facultate\PROIECT_SPG\Robotel\main.cpp(239,33): warning C4244:  'argument': conversion from 'double' to 'float', possible loss of data
 D:\facultate\PROIECT_SPG\Robotel\main.cpp(244,21): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
-D:\facultate\PROIECT_SPG\Robotel\main.cpp(343,53): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
-  Generating Code...
-D:\facultate\PROIECT_SPG\Robotel\main.cpp(343,40): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+D:\facultate\PROIECT_SPG\Robotel\main.cpp(277,20): warning C4244:  '=': conversion from 'double' to 'T', possible loss of data
+D:\facultate\PROIECT_SPG\Robotel\main.cpp(277,20): warning C4244:         with
+D:\facultate\PROIECT_SPG\Robotel\main.cpp(277,20): warning C4244:         [
+D:\facultate\PROIECT_SPG\Robotel\main.cpp(277,20): warning C4244:             T=float
+D:\facultate\PROIECT_SPG\Robotel\main.cpp(277,20): warning C4244:         ]
+D:\facultate\PROIECT_SPG\Robotel\main.cpp(278,20): warning C4244:  '=': conversion from 'double' to 'T', possible loss of data
+D:\facultate\PROIECT_SPG\Robotel\main.cpp(278,20): warning C4244:         with
+D:\facultate\PROIECT_SPG\Robotel\main.cpp(278,20): warning C4244:         [
+D:\facultate\PROIECT_SPG\Robotel\main.cpp(278,20): warning C4244:             T=float
+D:\facultate\PROIECT_SPG\Robotel\main.cpp(278,20): warning C4244:         ]
+D:\facultate\PROIECT_SPG\Robotel\main.cpp(279,20): warning C4244:  '=': conversion from 'double' to 'T', possible loss of data
+D:\facultate\PROIECT_SPG\Robotel\main.cpp(279,20): warning C4244:         with
+D:\facultate\PROIECT_SPG\Robotel\main.cpp(279,20): warning C4244:         [
+D:\facultate\PROIECT_SPG\Robotel\main.cpp(279,20): warning C4244:             T=float
+D:\facultate\PROIECT_SPG\Robotel\main.cpp(279,20): warning C4244:         ]
+D:\facultate\PROIECT_SPG\Robotel\main.cpp(361,53): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+D:\facultate\PROIECT_SPG\Robotel\main.cpp(361,40): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
   Robotel.vcxproj -> D:\facultate\PROIECT_SPG\Robotel\x64\Debug\Robotel.exe
