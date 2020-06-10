@@ -16,4 +16,5 @@ Un model de iluminare este modelul Phong si e alcatuit din 3 componente:
 	
 	Ca sa poti roti/scala si sa arate realist, trebuie sa inmultesti vectorii normali cu matricea normala.
 	Matricea normala este transpusa inversei partii 3x3 din stanga sus a model matrix.
+3)La specular iei in calcul ca mai ai si un viewer
 	
