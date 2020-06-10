@@ -7,9 +7,9 @@
 class Object
 {
 private:
-	std::vector<float> vertices;
-	std::vector<float> textureCoordinates;
-	std::vector<float> normals;
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec2> textureCoordinates;
+	std::vector<glm::vec3> normals;
 	bool hasUV;
 	bool hasNormal;
 	glm::mat4 model = glm::mat4(1.0f);
@@ -19,9 +19,9 @@ private:
 	unsigned int NextChrIndex(unsigned int start, const char* str, unsigned int length, char compareData);
 public:
 	Object(std::string numeFisier);
-	std::vector<float> GetVertices();
-	std::vector<float> GetTextureCoordinates();
-	std::vector<float> GetNormals();
+	std::vector<glm::vec3> GetVertices();
+	std::vector< glm::vec2 > GetTextureCoordinates();
+	std::vector<glm::vec3> GetNormals();
 	//model matrix
 	//get model matrix
 	//Object GetModel();
