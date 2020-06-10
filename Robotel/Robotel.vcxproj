@@ -137,8 +137,11 @@
     <Text Include="triunghi.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="fragment.frag" />
-    <None Include="vertex.vert" />
+    <None Include="basicFragment.frag" />
+    <None Include="basicVertex.vert" />
+    <None Include="lightFragment.frag" />
+    <None Include="lightVertex.vert" />
+    <None Include="sourceLight.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />

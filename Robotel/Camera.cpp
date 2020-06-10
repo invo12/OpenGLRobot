@@ -18,7 +18,22 @@ Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float u
 	updateCameraVectors();
 }
 
-//view matrix from data
+//Matematica, keep for refrence
+////position of the camera
+//glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+
+////directia camerei
+//glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+//glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
+
+////dreapta camerei
+//glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+//glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
+
+////axa verticala a camerei
+//glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
+
+//ce ai facut mai sus poti face prin lookAt
 glm::mat4 Camera::GetViewMatrix()
 {
 	return glm::lookAt(position, position + front, up);

@@ -80,8 +80,12 @@ float lastFrame = 0.0f; // Time of last frame
 float lastX = 400, lastY = 300;
 bool firstMouse = true;
 
-unsigned int VBO, VAO;
-Shader* basicShader;
+//iluminare
+glm::vec3 lightPos(-0.5f, 3.0f, -4.0f);
+
+//buffere si variabile de stare
+unsigned int VBO, VAO,lightVAO;
+Shader* basicShader, *lightShader, *lightSourceShader;
 unsigned int grassTexture, brickTexture;
 
 bool wireframe = false;
@@ -113,10 +117,19 @@ void initBuffers()
 	glEnableVertexAttribArray(1);
 */
 	//textura
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(2);
+	/*glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(2);*/
 
 	//dai unbind
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	//VAO pentru sursa de lumina
+	glGenVertexArrays(1, &lightVAO);
+	glBindVertexArray(lightVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
@@ -165,6 +178,15 @@ void initTextures()
 	stbi_image_free(data);
 }
 
+void initAll()
+{
+	initBuffers();
+	initTextures();
+	basicShader = new Shader("./Shaders/vertex/basicVertex.vert", "./Shaders/fragment/basicFragment.frag");
+	lightShader = new Shader("./Shaders/vertex/lightVertex.vert", "./Shaders/fragment/lightFragment.frag");
+	lightSourceShader = new Shader("./Shaders/vertex/lightVertex.vert", "./Shaders/fragment/lightSource.frag");
+	mainCamera = new Camera();
+}
 #pragma endregion
 
 #pragma region GLFW Input & Callbacks
@@ -245,8 +267,10 @@ void processInput(GLFWwindow* window)
 void draw()
 {
 	//program
-	basicShader->use();
-	
+	lightShader->use();
+	lightShader->setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+	lightShader->setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+
 	//texturare
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, grassTexture);
@@ -260,22 +284,6 @@ void draw()
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
 	
-	//Matematica, keep for refrence
-	////position of the camera
-	//glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-
-	////directia camerei
-	//glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-	//glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
-
-	////dreapta camerei
-	//glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-	//glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-
-	////axa verticala a camerei
-	//glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
-
-	//ce ai facut mai sus poti face prin lookAt
 	glm::mat4 view = mainCamera->GetViewMatrix();
 
 	glm::mat4 projection;
@@ -301,7 +309,15 @@ void draw()
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 
-
+	lightSourceShader->use();
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, lightPos);
+	model = glm::scale(model, glm::vec3(0.3f));
+	lightSourceShader->setMat4("model", model);
+	viewLoc = glGetUniformLocation(lightSourceShader->id, "view");
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+	projectionLoc = glGetUniformLocation(lightSourceShader->id, "projection");
+	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
@@ -341,10 +357,7 @@ int main()
 	///////////////////////////////////////
 	//AICI INITIALIZAM BUFFERELE///////////
 	///////////////////////////////////////
-	initBuffers();
-	initTextures();
-	basicShader = new Shader("vertex.vert","fragment.frag");
-	mainCamera = new Camera();
+	initAll();
 	//keep the window open
 	while (!glfwWindowShouldClose(window))
 	{

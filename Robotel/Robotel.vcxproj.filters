@@ -34,10 +34,19 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <None Include="vertex.vert">
+    <None Include="basicVertex.vert">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="fragment.frag">
+    <None Include="basicFragment.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lightVertex.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lightFragment.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="sourceLight.frag">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
