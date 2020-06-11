@@ -10,7 +10,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/matrix4x4.h>
 #include <assimp/cimport.h>
-#include "Texture.h"
+#include "Shader.h"
 struct Material {
 	glm::vec3 ambient;
 	glm::vec3 diffuse;
@@ -19,6 +19,13 @@ struct Material {
 	float dissolved;
 	float density;
 };
+
+struct TextureInfo {
+	unsigned int texID = 0;
+	unsigned int specTexID = 0;
+	unsigned int normalTexID;
+};
+
 class Object
 {
 private:
@@ -26,9 +33,10 @@ private:
 	glm::mat4 model = glm::mat4(1.0f);
 	std::vector<float> vertexBuff;
 	std::vector<unsigned int>indexBuff;
-	Texture* objectTexture;
+	Shader* shader;
+	TextureInfo* textureInfo;
 public:
-	Object(std::string numeFisier);
+	Object(std::string numeFisier,Shader* shader,TextureInfo* textureInfoData);
 	Object(const Object& object);
 	~Object();
 
@@ -41,15 +49,12 @@ public:
 	void Translate(glm::vec3 translate);
 	void Rotate(float angle1,glm::vec3 rotationAxis);
 	void Scale(glm::vec3 scale);
-	
-	Texture* GetTexture();
-	void ChangeTexture(std::string path);
 
+	void SetShader(Shader* shader);
+	Shader* GetShader();
 
-	//TODO CLONE!
-	//TODO ADAUGARE SHADER IN OBIECT
-	//Fisier Normala
-	//Draw()
+	void Draw();
+
 
 };
 

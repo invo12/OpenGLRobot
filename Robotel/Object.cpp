@@ -1,8 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "Object.h"
 
-
-Object::Object(std::string numeFisier)
+Object::Object(std::string numeFisier, Shader* shader, TextureInfo* textureInfoData)
 {
     Assimp::Importer importer;
     aiMesh* mesh;
@@ -46,7 +45,7 @@ Object::Object(std::string numeFisier)
             indexBuff.push_back(face->mIndices[1]);
             indexBuff.push_back(face->mIndices[2]);
         }
-        
+
     }
 
     std::string importMaterialPath = numeFisier + ".mtl";
@@ -87,9 +86,14 @@ Object::Object(std::string numeFisier)
             }
         }
     }
-    this->objectTexture =new Texture(numeFisier);
-}
+    this->shader = shader;
+    if (textureInfoData) {
+        this->textureInfo->texID = textureInfoData->texID;
+        this->textureInfo->specTexID = textureInfoData->specTexID;
+        this->textureInfo->normalTexID = textureInfoData->normalTexID;
+    }
 
+}
 void Object::ResetModelMatrix()
 {
     this->model = glm::mat4(1.0f);
@@ -115,30 +119,41 @@ void Object::Scale(glm::vec3 scale)
     this->model = glm::scale(this->model, scale);
 }
 
+void Object::SetShader(Shader* shader)
+{
+    this->shader = shader;
+}
+
+Shader* Object::GetShader()
+{
+    return this->shader;
+}
+
+void Object::Draw()
+{
+}
+
+
+
 Object::Object(const Object& object)
 {
     this->vertexBuff = object.vertexBuff;
     this->indexBuff = object.indexBuff;
     this->model = object.model;
-}
 
-Texture* Object::GetTexture()
-{
-    return objectTexture;
-}
-
-void Object::ChangeTexture(std::string path)
-{
-    if (objectTexture != nullptr) {
-        delete objectTexture;
-        objectTexture = nullptr;
-    }
-    objectTexture =new Texture(path);
+    this->materialData.ambient = object.materialData.ambient;
+    this->materialData.density = object.materialData.density;
+    this->materialData.diffuse = object.materialData.diffuse;
+    this->materialData.dissolved = object.materialData.dissolved;
+    this->materialData.specular = object.materialData.specular;
+    this->materialData.specularExponent = object.materialData.specularExponent;
+    this->shader = object.shader;
+    this->textureInfo = object.textureInfo;
 }
 
 Object::~Object()
 {
-    delete objectTexture;
+ 
 }
 
 
