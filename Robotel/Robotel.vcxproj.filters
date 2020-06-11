@@ -66,5 +66,14 @@
     <None Include="Shaders\fragment\lightSource.frag">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="Shaders\fragment\directionalLight.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Shaders\fragment\pointLight.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Shaders\fragment\flashLight.frag">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

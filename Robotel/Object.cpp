@@ -87,6 +87,7 @@ Object::Object(std::string numeFisier, Shader* shader, TextureInfo* textureInfoD
         }
     }
     this->shader = shader;
+	this->textureInfo = TextureInfo{0,0,0};
     if (textureInfoData) {
         this->textureInfo->texID = textureInfoData->texID;
         this->textureInfo->specTexID = textureInfoData->specTexID;

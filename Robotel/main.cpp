@@ -7,6 +7,7 @@
 #include <string>
 #include <fstream>
 
+#include "Object.h"
 #include "Shader.h"
 #include "Camera.h"
 #include "stb_image.h"
@@ -71,8 +72,7 @@ glm::vec3 cubePositions[] = {
 		glm::vec3(-1.3f,  1.0f, -1.5f)
 };
 
-Camera* mainCamera;
-
+//informatii fereastra
 float screenWidth = 800, screenHeight = 600;
 
 //for speed normalization
@@ -87,15 +87,19 @@ bool firstMouse = true;
 glm::vec3 lightPos(-0.5f, 3.0f, -4.0f);
 
 //buffere si variabile de stare
-unsigned int VBO, VAO, lightVAO;
-Shader* basicShader, * lightShader, * lightSourceShader;
+unsigned int VBO, VAO, EBO;
 
-unsigned int grassTexture, brickTexture, woodTexture;
+unsigned int grassTexture, brickTexture, woodTexture, cabinaTexture;
 unsigned int woodSpecular;
 
 bool wireframe = false;
 bool grass = true;
 float angle = 0;
+bool night = false;
+
+Camera* mainCamera;
+Shader* directionalShader, * flashShader;
+Object* cabin;
 #pragma endregion
 
 #pragma region Initializari
@@ -105,13 +109,17 @@ void initBuffers()
 	//genereaza bufferele necesare
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
 
 	//pentru obiecte
 	glBindVertexArray(VAO);
 
 	//pune in buffer informatiile
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, cabin->GetVertexBuffer().size() * sizeof(float), &cabin->GetVertexBuffer()[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, cabin->GetIndexBuffer().size() * sizeof(unsigned int), &cabin->GetIndexBuffer()[0], GL_STATIC_DRAW);
 
 	//seteaza atributele
 	//pozitia
@@ -125,107 +133,49 @@ void initBuffers()
 	//texturi
 	glVertexAttribPointer(2, 2 , GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
-	
+
 	//dai unbind
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+}
 
-	//VAO pentru sursa de lumina
-	glGenVertexArrays(1, &lightVAO);
-	glBindVertexArray(lightVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+void loadTexture(const char* path,unsigned int &id)
+{
+	int width, height, nrChannels;
+	glGenTextures(1, &id);
+	glBindTexture(GL_TEXTURE_2D, id);
+	unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		cout << "Nu am putut incarca textura";
+	}
+	stbi_image_free(data);
+	
+	//unbind
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void initTextures()
 {
-	int width, height, nrChannels;
-	unsigned char* data = stbi_load("grassTexture.jpg", &width, &height, &nrChannels, 0);
-
-	glGenTextures(1, &grassTexture);
-
-	//setari 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glBindTexture(GL_TEXTURE_2D, grassTexture);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else {
-		cout << "Nu am putut incarca textura";
-	}
-	stbi_image_free(data);
-
-	//unbind
-	glBindTexture(GL_TEXTURE_2D, 0);
-	
-	//brick texture
-	glGenTextures(1, &brickTexture);
-	glBindTexture(GL_TEXTURE_2D, brickTexture);
-	data = stbi_load("brickTexture.jpg", &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else {
-		cout << "Nu am putut incarca textura";
-	}
-	stbi_image_free(data);
-	//unbind
-	glBindTexture(GL_TEXTURE_2D, 0);
-	
-	
-	//wood texture
-	glGenTextures(1, &woodTexture);
-	glBindTexture(GL_TEXTURE_2D, woodTexture);
-	data = stbi_load("wood.jpg", &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else {
-		cout << "Nu am putut incarca textura";
-	}
-	stbi_image_free(data);
-	//unbind
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-
-	//wood specular
-	glGenTextures(1, &woodSpecular);
-	glBindTexture(GL_TEXTURE_2D, woodSpecular);
-	data = stbi_load("woodSpecular.jpg", &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else {
-		cout << "Nu am putut incarca textura";
-	}
-	stbi_image_free(data);
-	//unbind
-	glBindTexture(GL_TEXTURE_2D, 0);
+	loadTexture("grassTexture.jpg", grassTexture);
+	loadTexture("brickTexture.jpg", brickTexture);
+	loadTexture("wood.jpg", woodTexture);
+	loadTexture("woodSpecular.jpg", woodSpecular);
+	loadTexture("Cabina.jpg", cabinaTexture);
 }
 
 void initAll()
 {
+	directionalShader = new Shader("./Shaders/vertex/lightVertex.vert", "./Shaders/fragment/directionalLight.frag");
+	flashShader = new Shader("./Shaders/vertex/lightVertex.vert", "./Shaders/fragment/flashLight.frag");
+	cabin = new Object("Cabina", (night ? flashShader : directionalShader), new TextureInfo{ cabinaTexture, 0, 0 });
 	initBuffers();
 	initTextures();
-	basicShader = new Shader("./Shaders/vertex/basicVertex.vert", "./Shaders/fragment/basicFragment.frag");
-	lightShader = new Shader("./Shaders/vertex/lightVertex.vert", "./Shaders/fragment/lightFragment.frag");
-	lightSourceShader = new Shader("./Shaders/vertex/lightVertex.vert", "./Shaders/fragment/lightSource.frag");
+
 	mainCamera = new Camera();
 }
 #pragma endregion
@@ -257,6 +207,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_R && action == GLFW_PRESS)
 	{
 		angle = (int)(angle + 10) % 360;
+	}
+	if (key == GLFW_KEY_L && action == GLFW_PRESS)
+	{
+		if (!night)
+			cabin->SetShader(flashShader);
+		else
+			cabin->SetShader(directionalShader);
+		night = !night;
 	}
 }
 
@@ -308,25 +266,36 @@ void processInput(GLFWwindow* window)
 void draw()
 {
 	//program
-	lightShader->use();
-	lightShader->setVec3("light.position", lightPos);
-	lightShader->setVec3("viewPos", mainCamera->position);
+	cabin->GetShader()->use();
+	cabin->GetShader()->setVec3("light.position", lightPos);
+	cabin->GetShader()->setVec3("viewPos", mainCamera->position);
 	
 	//light
-	lightShader->setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
-	lightShader->setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
-	lightShader->setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+	cabin->GetShader()->setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+	cabin->GetShader()->setVec3("light.diffuse", 0.7f, 0.7f, 0.7f);
+	cabin->GetShader()->setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+	cabin->GetShader()->setVec3("light.direction", -0.2f, -1.0f, -0.3f);
+	if (night)
+	{
+		cabin->GetShader()->setFloat("light.constant", 1.0f);
+		cabin->GetShader()->setFloat("light.linear", 0.09f);
+		cabin->GetShader()->setFloat("light.quadratic", 0.032f);
 
+		cabin->GetShader()->setVec3("light.position", mainCamera->position);
+		cabin->GetShader()->setVec3("light.direction", mainCamera->front);
+		cabin->GetShader()->setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
+		cabin->GetShader()->setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
+	}
 	//material proprietes
-	lightShader->setFloat("material.shininess", 64.0f);
+	cabin->GetShader()->setFloat("material.shininess", 32.0f);
 	//material
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, woodTexture);
-	lightShader->setInt("material.diffuse", 0);
+	glBindTexture(GL_TEXTURE_2D, cabinaTexture);
+	cabin->GetShader()->setInt("material.diffuse", 0);
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, woodSpecular);
-	lightShader->setInt("material.specular", 1);
+	cabin->GetShader()->setInt("material.specular", 1);
 	
 
 	//transformari
@@ -340,11 +309,11 @@ void draw()
 
 
 	//set uniform variables
-	int modelLoc = glGetUniformLocation(lightShader->id, "model");
+	int modelLoc = glGetUniformLocation(cabin->GetShader()->id, "model");
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-	int viewLoc = glGetUniformLocation(lightShader->id, "view");
+	int viewLoc = glGetUniformLocation(cabin->GetShader()->id, "view");
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	int projectionLoc = glGetUniformLocation(lightShader->id, "projection");
+	int projectionLoc = glGetUniformLocation(cabin->GetShader()->id, "projection");
 	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 	
 
@@ -359,27 +328,26 @@ void draw()
 		float angle = 20.0f * (i+1);
 		model = glm::rotate(model, glm::radians(angle) * (i%2 == 0 ? 1 : -1), glm::vec3(1.0f, 0.3f, 0.5f));
 		glm::mat3 normalMatrix(transpose(inverse(model)));
-		lightShader->setMat3("normalMatrix", normalMatrix);
-		lightShader->setMat4("model", model);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		cabin->GetShader()->setMat3("normalMatrix", normalMatrix);
+		cabin->GetShader()->setMat4("model", model);
+		glDrawElements(GL_TRIANGLES, cabin->GetIndexBuffer().size(), GL_UNSIGNED_INT, (void*)0);
 	}
-
-	lightSourceShader->use();
-	model = glm::mat4(1.0f);
-	model = glm::translate(model, lightPos);
-	model = glm::scale(model, glm::vec3(0.3f));
-	lightSourceShader->setMat4("model", model);
-	viewLoc = glGetUniformLocation(lightSourceShader->id, "view");
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	projectionLoc = glGetUniformLocation(lightSourceShader->id, "projection");
-	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-	
-	//bind VAO for sourceLight
-	glBindVertexArray(lightVAO);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
 #pragma endregion
+
+#pragma region Dealocare
+void deleteAll()
+{
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	delete directionalShader;
+	delete flashShader;
+	delete mainCamera;
+	delete cabin;
+}
+#pragma endregion
+
 
 
 int main()
@@ -438,10 +406,7 @@ int main()
 
 
 	//dealocate resources
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	delete basicShader;
-	delete mainCamera;
+	deleteAll();
 	glfwTerminate();
 	return 0;
 

@@ -145,8 +145,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\fragment\basicFragment.frag" />
+    <None Include="Shaders\fragment\directionalLight.frag" />
+    <None Include="Shaders\fragment\flashLight.frag" />
     <None Include="Shaders\fragment\lightFragment.frag" />
     <None Include="Shaders\fragment\lightSource.frag" />
+    <None Include="Shaders\fragment\pointLight.frag" />
     <None Include="Shaders\vertex\basicVertex.vert" />
     <None Include="Shaders\vertex\lightVertex.vert" />
   </ItemGroup>
