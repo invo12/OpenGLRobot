@@ -8,10 +8,11 @@
 #include <string>
 #include <fstream>
 
+#include "stb_image.h"
 #include "StaticObject.h"
 #include "Shader.h"
 #include "Camera.h"
-#include "stb_image.h"
+#include "TextureManager.h"
 
 using namespace std;
 #pragma region Declaratii
@@ -45,9 +46,6 @@ glm::vec3 lightPos(-0.5f, 3.0f, -4.0f);
 
 //buffere si variabile de stare
 unsigned int VBO, VAO, EBO;
-
-unsigned int grassTexture, brickTexture, woodTexture, dulapTexture;
-unsigned int woodSpecular;
 
 bool wireframe = false;
 bool grass = true;
@@ -116,45 +114,17 @@ void initBuffers()
 	setObjectBuffers();
 }
 
-void loadTexture(const char* path,unsigned int &id)
-{
-	int width, height, nrChannels;
-	glGenTextures(1, &id);
-	glBindTexture(GL_TEXTURE_2D, id);
-	unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else {
-		cout << "Nu am putut incarca textura";
-	}
-	stbi_image_free(data);
-	
-	//unbind
-	glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-void initTextures()
-{
-	loadTexture("grassTexture.jpg", grassTexture);
-	loadTexture("brickTexture.jpg", brickTexture);
-	loadTexture("wood.jpg", woodTexture);
-	loadTexture("Cabina_specular.jpg", woodSpecular);
-	loadTexture("Cabina.jpg", dulapTexture);
-}
-
 void initShaders()
 {
 	directionalShader = new Shader("./Shaders/vertex/lightVertex.vert", "./Shaders/fragment/directionalLight.frag");
 	flashShader = new Shader("./Shaders/vertex/lightVertex.vert", "./Shaders/fragment/flashLight.frag");
 }
+
 void initStaticObjects()
 {
 	for (int i = 0; i < 10; ++i)
 	{
-		dulapuri.push_back(new StaticObject("Cabina", (night ? flashShader : directionalShader), new TextureInfo{ dulapTexture, woodSpecular, 0 }));
+		dulapuri.push_back(new StaticObject("Cabina", (night ? flashShader : directionalShader)));
 		dulapuri[i]->Translate(glm::vec3(0, 0, 5 * i));
 		dulapuri[i]->Rotate(glm::radians(30.0f * i), glm::vec3(0, 0, 1));
 	}
@@ -163,12 +133,8 @@ void initStaticObjects()
 void initAll()
 {
 	initShaders();
-	initTextures();
 	initStaticObjects();
-	
 	initBuffers();
-
-
 	mainCamera = new Camera();
 }
 #pragma endregion
@@ -185,10 +151,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	if (key == GLFW_KEY_2 && action == GLFW_PRESS)
-	{
-		swap(grassTexture, brickTexture);
-	}
 	if (key == GLFW_KEY_1 && action == GLFW_PRESS)
 	{
 		if (!wireframe)
@@ -260,8 +222,6 @@ void processInput(GLFWwindow* window)
 void draw()
 {
 #pragma region Light&Camera Settings
-
-
 
 	//program
 	dulapuri[0]->GetShader()->setVec3("light.position", lightPos);

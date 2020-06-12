@@ -1,6 +1,6 @@
 #include "StaticObject.h"
 
-StaticObject::StaticObject(std::string numeFisier, Shader* shader, TextureInfo* textureInfoData) : Object{numeFisier, shader, textureInfoData}
+StaticObject::StaticObject(std::string numeFisier, Shader* shader) : Object{ numeFisier, shader }
 {}
 
 void StaticObject::Translate(glm::vec3 translate)

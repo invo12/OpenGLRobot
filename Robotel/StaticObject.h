@@ -5,7 +5,7 @@
 class StaticObject : public Object 
 {
 public:
-	StaticObject(std::string numeFisier, Shader* shader, TextureInfo* textureInfoData);
+	StaticObject(std::string numeFisier, Shader* shader);
 	void Translate(glm::vec3 translate) override;
 	void Rotate(float angle1, glm::vec3 rotationAxis) override;
 	void Scale(glm::vec3 scale) override;

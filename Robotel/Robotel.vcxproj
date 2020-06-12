@@ -135,6 +135,7 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="StaticObject.cpp" />
     <ClCompile Include="STB.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="triunghi.txt" />
@@ -146,6 +147,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="StaticObject.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="TextureManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\fragment\basicFragment.frag" />

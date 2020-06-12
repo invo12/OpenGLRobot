@@ -1,17 +1,17 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "Object.h"
 
-Object::Object(std::string numeFisier, Shader* shader, TextureInfo* textureInfoData)
+Object::Object(std::string numeFisier, Shader* shader)
 {
+	name = numeFisier;
+	VAO = 0;
 	vertexBuff = ObjectLoader::GetVertexBuffer(numeFisier);
 	indexBuff = ObjectLoader::GetIndexBuffer(numeFisier);
 	material = ObjectLoader::GetMaterial(numeFisier);
-	this->textureInfo = new TextureInfo{0,0,0};
-    if (textureInfoData) {
-        this->textureInfo->texID = textureInfoData->texID;
-        this->textureInfo->specTexID = textureInfoData->specTexID;
-        this->textureInfo->normalTexID = textureInfoData->normalTexID;
-    }
+	this->textureInfo = TextureInfo{0,0,0};
+	this->textureInfo.texID = TextureManager::GetTextureID(name);
+    this->textureInfo.specTexID = TextureManager::GetTextureID(name + "_specular");
+	this->textureInfo.normalTexID = 0;
 	this->model = glm::mat4(1.0f);
 	this->normal = glm::mat4(1.0f);
 	this->shader = shader;
@@ -45,6 +45,11 @@ void Object::Scale(glm::vec3 scale)
     this->model = glm::scale(this->model, scale);
 }
 
+string Object::GetName()
+{
+	return name;
+}
+
 void Object::SetShader(Shader* shader)
 {
     this->shader = shader;
@@ -61,11 +66,11 @@ void Object::Draw()
 	shader->use();
 	//setare parametri shader
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureInfo->texID);
+	glBindTexture(GL_TEXTURE_2D, textureInfo.texID);
 	shader->setInt("material.diffuse", 0);
 
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, textureInfo->specTexID);
+	glBindTexture(GL_TEXTURE_2D, textureInfo.specTexID);
 	shader->setInt("material.specular", 1);
 	shader->setFloat("material.shininess", material.specularExponent);
 	shader->setMat4("model", model);
@@ -110,3 +115,4 @@ std::vector<unsigned int> Object::GetIndexBuffer()
     return *this->indexBuff;
 
 }
+

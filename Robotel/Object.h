@@ -12,6 +12,7 @@
 #include <assimp/cimport.h>
 #include "Shader.h"
 #include "ObjectLoader.h"
+#include "TextureManager.h"
 
 class Object
 {
@@ -20,13 +21,14 @@ private:
 	std::vector<float>* vertexBuff;
 	std::vector<unsigned int>* indexBuff;
 	Shader* shader;
-	TextureInfo* textureInfo;
+	TextureInfo textureInfo;
+	string name;
 	int VAO;
 protected:
 	glm::mat4 model;
 	glm::mat4 normal;
 public:
-	Object(std::string numeFisier,Shader* shader,TextureInfo* textureInfoData);
+	Object(std::string numeFisier,Shader* shader);
 	Object(const Object& object);
 	~Object();
 
@@ -37,6 +39,7 @@ public:
 	void ResetModelMatrix();
 	glm::mat4 GetModelMatrix();
 
+	string GetName();
 	void SetShader(Shader* shader);
 	Shader* GetShader();
 
