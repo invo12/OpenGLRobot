@@ -9,10 +9,10 @@
 #include <fstream>
 
 #include "stb_image.h"
-#include "StaticObject.h"
 #include "Shader.h"
 #include "Camera.h"
 #include "TextureManager.h"
+#include "Object.h"
 
 using namespace std;
 #pragma region Declaratii
@@ -54,7 +54,7 @@ bool night = false;
 
 Camera* mainCamera;
 Shader* directionalShader, * flashShader;
-vector<StaticObject*> dulapuri;
+vector<Object*> dulapuri;
 #pragma endregion
 
 #pragma region Utilitare
@@ -79,9 +79,10 @@ void initStaticObjects()
 {
 	for (int i = 0; i < 10; ++i)
 	{
-		dulapuri.push_back(new StaticObject("Cabina", (night ? flashShader : directionalShader)));
-		dulapuri[i]->Translate(glm::vec3(0, 0, 5 * i));
-		dulapuri[i]->Rotate(glm::radians(30.0f * i), glm::vec3(0, 0, 1));
+		dulapuri.push_back(new Object("Cabina", (night ? flashShader : directionalShader)));
+		dulapuri[i]->SetPosition(glm::vec3(0, 0, 5 * i));
+		dulapuri[i]->Rotate(30.0f * i, Axis::z);
+		dulapuri[i]->SetScale(glm::vec3(2, 2, 1));	
 	}
 }
 

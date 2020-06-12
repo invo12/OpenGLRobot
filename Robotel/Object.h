@@ -16,41 +16,67 @@
 #include "TextureManager.h"
 #include "BufferManager.h"
 
+enum class Axis {
+	x,
+	y,
+	z
+};
+
 class Object
 {
 private:
-	Material material;
+	//buffers
 	std::vector<float>* vertexBuff;
 	std::vector<unsigned int>* indexBuff;
-	Shader* shader;
-	TextureInfo textureInfo;
-	string name;
 	unsigned int VAO;
+	
+	//shader
+	Shader* shader;
 
-protected:
+	//textures
+	TextureInfo textureInfo;
+	
+	//materials
+	Material material;
+
+	//info about object
+	string name;
+	glm::vec3 position, rotation, scale;
+	
+	//for vertex shader
 	glm::mat4 model;
 	glm::mat4 normal;
+
+	//initialize VAO, VBO, EBO
 	void initBuffers();
 
 public:
-	Object(std::string numeFisier,Shader* shader);
+	Object(std::string numeFisier, Shader* shader, glm::vec3 position = glm::vec3(0), glm::vec3 rotation = glm::vec3(0), glm::vec3 scale = glm::vec3(0));
 	~Object();
 
 	std::vector<float> GetVertexBuffer();
 	std::vector<unsigned int> GetIndexBuffer();
-
 	void SetVAO(int VAO);
-	void ResetModelMatrix();
-	glm::mat4 GetModelMatrix();
 
-	string GetName();
 	void SetShader(Shader* shader);
 	Shader* GetShader();
 
-	virtual void Translate(glm::vec3 translate);
-	virtual void Rotate(float angle1, glm::vec3 rotationAxis);
-	virtual void Scale(glm::vec3 scale);
-	virtual void Draw();
+	//reset position, rotation and scale
+	void Reset();
+	glm::mat4 GetModelMatrix();
+
+	string GetName();
+	
+	//move object around
+	void Translate(glm::vec3 translate);
+	void Rotate(float degAngle, Axis rotationAxis);
+	
+	//set object properties
+	void SetPosition(glm::vec3 position);
+	void SetRotation(glm::vec3 rotation);
+	void SetScale(glm::vec3 scale);
+
+	void Draw();
 };
 
 

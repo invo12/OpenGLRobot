@@ -47,30 +47,59 @@ void Object::initBuffers()
 	}
 }
 
-Object::Object(std::string numeFisier, Shader* shader)
+Object::Object(std::string numeFisier, Shader* shader, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
 {
+	//set name
 	name = numeFisier;
-	VAO = 0;
 	
+	//set shader
+	this->shader = shader;
+
+	//Load vertex and index buffers
 	vertexBuff = ObjectLoader::GetVertexBuffer(numeFisier);
 	indexBuff = ObjectLoader::GetIndexBuffer(numeFisier);
 
+	//initialize VAO, VBO, EBO
 	initBuffers();
+
+	//set materials and textures
 	material = ObjectLoader::GetMaterial(numeFisier);
 	this->textureInfo = TextureInfo{0,0,0};
 	this->textureInfo.texID = TextureManager::GetTextureID(name);
     this->textureInfo.specTexID = TextureManager::GetTextureID(name + "_specular");
 	this->textureInfo.normalTexID = 0;
+
+	//set matrices
 	this->model = glm::mat4(1.0f);
 	this->normal = glm::mat4(1.0f);
-	this->shader = shader;
+
+	this->position = position;
+	this->rotation = rotation;
+	this->scale = scale;
+
+	if (position != glm::vec3(0))
+	{
+		SetPosition(position);
+	}
+	if (rotation != glm::vec3(0))
+	{
+		SetRotation(rotation);
+	}
+	if (scale != glm::vec3(0))
+	{
+
+	}
 }
 void Object::SetVAO(int VAO)
 {
 	this->VAO = VAO;
 }
-void Object::ResetModelMatrix()
+
+void Object::Reset()
 {
+	this->position = glm::vec3(0);
+	this->rotation = glm::vec3(0);
+	this->scale = glm::vec3(0);
     this->model = glm::mat4(1.0f);
 }
 
@@ -79,20 +108,55 @@ glm::mat4 Object::GetModelMatrix()
     return this->model;
 }
 
+
+#pragma region Transformations
+
 void Object::Translate(glm::vec3 translate)
 {
+	position += translate;
     this->model = glm::translate(this->model, glm::vec3(translate.x, translate.y, translate.z));
 }
 
-void Object::Rotate(float angle1, glm::vec3 rotationAxis)
+void Object::Rotate(float degAngle, Axis rotationAxis)
 {
-    this->model = glm::rotate(this->model, angle1, rotationAxis);
+	glm::vec3 axisVector(1,0,0);
+	if (rotationAxis == Axis::x)
+	{
+		axisVector = glm::vec3(1, 0, 0);
+		rotation.x += degAngle;
+	}
+	else if (rotationAxis == Axis::y)
+	{
+		axisVector = glm::vec3(0, 1, 0);
+		rotation.y += degAngle;
+	}
+	else
+	{
+		axisVector = glm::vec3(0, 0, 1);
+		rotation.z += degAngle;
+	}
+    this->model = glm::rotate(this->model, glm::radians(degAngle), axisVector);
 }
 
-void Object::Scale(glm::vec3 scale)
+void Object::SetPosition(glm::vec3 position)
 {
+	Translate(position - this->position);
+}
+
+void Object::SetRotation(glm::vec3 rotation)
+{
+	Rotate(rotation.x - this->rotation.x, Axis::x);
+	Rotate(rotation.y - this->rotation.x, Axis::y);
+	Rotate(rotation.z - this->rotation.x, Axis::z);
+}
+
+void Object::SetScale(glm::vec3 scale)
+{
+	this->scale = scale;
     this->model = glm::scale(this->model, scale);
 }
+#pragma endregion
+
 
 string Object::GetName()
 {
@@ -121,6 +185,7 @@ void Object::Draw()
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, textureInfo.specTexID);
 	shader->setInt("material.specular", 1);
+
 	shader->setFloat("material.shininess", material.specularExponent);
 	
 	shader->setMat4("model", model);
