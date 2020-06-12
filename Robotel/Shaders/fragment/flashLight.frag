@@ -25,7 +25,8 @@ struct Light {
 in vec3 FragPos;  
 in vec3 Normal;  
 in vec2 TexCoords;
-  
+
+uniform sampler2D normalMap;  
 uniform vec3 viewPos;
 uniform Material material;
 uniform Light light;
@@ -36,7 +37,8 @@ void main()
     vec3 ambient = light.ambient * texture(material.diffuse, TexCoords).rgb;
     
     // diffuse 
-    vec3 norm = normalize(Normal);
+    vec3 norm = texture(normalMap, TexCoords).rgb;
+	norm = normalize(norm * 2.0 - 1.0);
     vec3 lightDir = normalize(light.position - FragPos);
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = light.diffuse * diff * texture(material.diffuse, TexCoords).rgb;  

@@ -67,7 +67,7 @@ Object::Object(std::string numeFisier, Shader* shader, glm::vec3 position, glm::
 	this->textureInfo = TextureInfo{0,0,0};
 	this->textureInfo.texID = TextureManager::GetTextureID(name);
     this->textureInfo.specTexID = TextureManager::GetTextureID(name + "_specular");
-	this->textureInfo.normalTexID = 0;
+	this->textureInfo.normalTexID = TextureManager::GetTextureID(name + "_normal");
 
 	//set matrices
 	this->model = glm::mat4(1.0f);
@@ -189,10 +189,14 @@ void Object::Draw()
 	glBindTexture(GL_TEXTURE_2D, textureInfo.specTexID);
 	shader->setInt("material.specular", 1);
 
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, textureInfo.normalTexID);
+	shader->setInt("normalMap", 2);
 	shader->setFloat("material.shininess", material.specularExponent);
 	
 	shader->setMat4("model", model);
 	shader->setMat3("normalMatrix", normal);
+	
 
 	//bind la VAO
 	glBindVertexArray(VAO);

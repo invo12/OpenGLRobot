@@ -78,10 +78,3 @@ public:
 
 	void Draw();
 };
-
-
-
-
-
-
-
