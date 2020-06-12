@@ -1,12 +1,61 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "Object.h"
 
+void Object::initBuffers()
+{
+	if (BufferManager::GetVAO(name) == BUFFER_NOT_FOUND)
+	{
+		unsigned int VBO, EBO;
+		//genereaza bufferele necesare
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+		glGenBuffers(1, &EBO);
+
+		//pentru obiecte
+		glBindVertexArray(VAO);
+
+		//pune in buffer informatiile
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, (*vertexBuff).size() * sizeof(float), &(*vertexBuff)[0], GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, (*indexBuff).size() * sizeof(unsigned int), &(*indexBuff)[0], GL_STATIC_DRAW);
+
+		//seteaza atributele
+		//pozitia
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		//normale
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
+
+		//texturi
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+		glEnableVertexAttribArray(2);
+
+		//dai unbind
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+
+		//setezi in buffer manager
+		BufferManager::SetBuffers(name, VAO, VBO, EBO);
+	}
+	else
+	{
+		VAO = BufferManager::GetVAO(name);
+	}
+}
+
 Object::Object(std::string numeFisier, Shader* shader)
 {
 	name = numeFisier;
 	VAO = 0;
+	
 	vertexBuff = ObjectLoader::GetVertexBuffer(numeFisier);
 	indexBuff = ObjectLoader::GetIndexBuffer(numeFisier);
+
+	initBuffers();
 	material = ObjectLoader::GetMaterial(numeFisier);
 	this->textureInfo = TextureInfo{0,0,0};
 	this->textureInfo.texID = TextureManager::GetTextureID(name);
@@ -73,6 +122,7 @@ void Object::Draw()
 	glBindTexture(GL_TEXTURE_2D, textureInfo.specTexID);
 	shader->setInt("material.specular", 1);
 	shader->setFloat("material.shininess", material.specularExponent);
+	
 	shader->setMat4("model", model);
 
 	//bind la VAO
@@ -81,29 +131,10 @@ void Object::Draw()
 	glDrawElements(GL_TRIANGLES, (*indexBuff).size(), GL_UNSIGNED_INT, (void*)0);
 }
 
-
-
-Object::Object(const Object& object)
-{
-    this->vertexBuff = object.vertexBuff;
-    this->indexBuff = object.indexBuff;
-    this->model = object.model;
-
-    this->material.ambient = object.material.ambient;
-    this->material.density = object.material.density;
-    this->material.diffuse = object.material.diffuse;
-    this->material.dissolved = object.material.dissolved;
-    this->material.specular = object.material.specular;
-    this->material.specularExponent = object.material.specularExponent;
-    this->shader = object.shader;
-    this->textureInfo = object.textureInfo;
-}
-
 Object::~Object()
 {
  
 }
-
 
 std::vector<float> Object::GetVertexBuffer()
 {

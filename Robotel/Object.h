@@ -10,9 +10,11 @@
 #include <assimp/postprocess.h>
 #include <assimp/matrix4x4.h>
 #include <assimp/cimport.h>
+
 #include "Shader.h"
 #include "ObjectLoader.h"
 #include "TextureManager.h"
+#include "BufferManager.h"
 
 class Object
 {
@@ -23,13 +25,15 @@ private:
 	Shader* shader;
 	TextureInfo textureInfo;
 	string name;
-	int VAO;
+	unsigned int VAO;
+
 protected:
 	glm::mat4 model;
 	glm::mat4 normal;
+	void initBuffers();
+
 public:
 	Object(std::string numeFisier,Shader* shader);
-	Object(const Object& object);
 	~Object();
 
 	std::vector<float> GetVertexBuffer();

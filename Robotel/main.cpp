@@ -65,54 +65,9 @@ void changeAllShaders(Shader* shader)
 		dulapuri[i]->SetShader(shader);
 	}
 }
-
-void setObjectBuffers()
-{
-	for (int i = 0; i < 10; ++i)
-	{
-		dulapuri[i]->SetVAO(VAO);
-	}
-}
 #pragma endregion
 
 #pragma region Initializari
-
-void initBuffers() 
-{	
-	//genereaza bufferele necesare
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-
-	//pentru obiecte
-	glBindVertexArray(VAO);
-
-	//pune in buffer informatiile
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, dulapuri[0]->GetVertexBuffer().size() * sizeof(float), &dulapuri[0]->GetVertexBuffer()[0], GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, dulapuri[0]->GetIndexBuffer().size() * sizeof(unsigned int), &dulapuri[0]->GetIndexBuffer()[0], GL_STATIC_DRAW);
-
-	//seteaza atributele
-	//pozitia
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	
-	//normale
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3* sizeof(float)));
-	glEnableVertexAttribArray(1);
-	
-	//texturi
-	glVertexAttribPointer(2, 2 , GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
-	//dai unbind
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-	setObjectBuffers();
-}
 
 void initShaders()
 {
@@ -134,7 +89,6 @@ void initAll()
 {
 	initShaders();
 	initStaticObjects();
-	initBuffers();
 	mainCamera = new Camera();
 }
 #pragma endregion
@@ -265,8 +219,7 @@ void draw()
 #pragma region Dealocare
 void deleteAll()
 {
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
+	BufferManager::DeleteBuffers();
 	delete directionalShader;
 	delete flashShader;
 	delete mainCamera;
