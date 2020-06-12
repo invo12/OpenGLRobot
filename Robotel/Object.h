@@ -21,6 +21,7 @@ private:
 	std::vector<unsigned int>* indexBuff;
 	Shader* shader;
 	TextureInfo* textureInfo;
+	int VAO;
 protected:
 	glm::mat4 model;
 	glm::mat4 normal;
@@ -32,6 +33,7 @@ public:
 	std::vector<float> GetVertexBuffer();
 	std::vector<unsigned int> GetIndexBuffer();
 
+	void SetVAO(int VAO);
 	void ResetModelMatrix();
 	glm::mat4 GetModelMatrix();
 

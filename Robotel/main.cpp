@@ -67,6 +67,14 @@ void changeAllShaders(Shader* shader)
 		dulapuri[i]->SetShader(shader);
 	}
 }
+
+void setObjectBuffers()
+{
+	for (int i = 0; i < 10; ++i)
+	{
+		dulapuri[i]->SetVAO(VAO);
+	}
+}
 #pragma endregion
 
 #pragma region Initializari
@@ -104,6 +112,8 @@ void initBuffers()
 	//dai unbind
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+
+	setObjectBuffers();
 }
 
 void loadTexture(const char* path,unsigned int &id)
@@ -144,17 +154,20 @@ void initStaticObjects()
 {
 	for (int i = 0; i < 10; ++i)
 	{
-		dulapuri.push_back(new StaticObject("Cabina", (night ? flashShader : directionalShader), new TextureInfo{ dulapTexture, 0, 0 }));
+		dulapuri.push_back(new StaticObject("Cabina", (night ? flashShader : directionalShader), new TextureInfo{ dulapTexture, woodSpecular, 0 }));
+		dulapuri[i]->Translate(glm::vec3(0, 0, 5 * i));
+		dulapuri[i]->Rotate(glm::radians(30.0f * i), glm::vec3(0, 0, 1));
 	}
 }
 
 void initAll()
 {
 	initShaders();
+	initTextures();
 	initStaticObjects();
 	
 	initBuffers();
-	initTextures();
+
 
 	mainCamera = new Camera();
 }
@@ -246,8 +259,11 @@ void processInput(GLFWwindow* window)
 
 void draw()
 {
+#pragma region Light&Camera Settings
+
+
+
 	//program
-	dulapuri[0]->GetShader()->use();
 	dulapuri[0]->GetShader()->setVec3("light.position", lightPos);
 	dulapuri[0]->GetShader()->setVec3("viewPos", mainCamera->position);
 	
@@ -266,44 +282,22 @@ void draw()
 		dulapuri[0]->GetShader()->setVec3("light.direction", mainCamera->front);
 		dulapuri[0]->GetShader()->setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
 		dulapuri[0]->GetShader()->setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
-	}
-	//material proprietes
-	dulapuri[0]->GetShader()->setFloat("material.shininess", 32.0f);
-	//material
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, dulapTexture);
-	dulapuri[0]->GetShader()->setInt("material.diffuse", 0);
-
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, woodSpecular);
-	dulapuri[0]->GetShader()->setInt("material.specular", 1);
-	
-
-	//transformari
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-	
+	}	
 	glm::mat4 view = mainCamera->GetViewMatrix();
-
 	glm::mat4 projection;
 	projection = glm::perspective(glm::radians(mainCamera->zoom), screenWidth / screenHeight, 0.1f, 100.0f);
 
-
 	//set uniform variables
-	int modelLoc = glGetUniformLocation(dulapuri[0]->GetShader()->id, "model");
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	int viewLoc = glGetUniformLocation(dulapuri[0]->GetShader()->id, "view");
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 	int projectionLoc = glGetUniformLocation(dulapuri[0]->GetShader()->id, "projection");
 	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-	
+#pragma endregion
 
-
-	//bind VAO for objects
-	
-	glBindVertexArray(VAO);
-	dulapuri[0]->Draw();
-	glDrawElements(GL_TRIANGLES, dulapuri[0]->GetIndexBuffer().size(), GL_UNSIGNED_INT, (void*)0);
+#pragma region Objects Setup
+	for (int i = 0; i < 10; ++i)
+		dulapuri[i]->Draw();
+#pragma endregion
 }
 
 #pragma endregion

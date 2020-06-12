@@ -1,19 +1,15 @@
-﻿  ObjectLoader.cpp
-  main.cpp
-D:\facultate\PROIECT_SPG\Robotel\ObjectLoader.cpp(30,12): warning C4101:  'face': unreferenced local variable
-D:\facultate\PROIECT_SPG\Robotel\main.cpp(168,16): warning C4244:  '=': conversion from 'int' to 'float', possible loss of data
-D:\facultate\PROIECT_SPG\Robotel\main.cpp(169,17): warning C4244:  '=': conversion from 'int' to 'float', possible loss of data
-D:\facultate\PROIECT_SPG\Robotel\main.cpp(189,29): warning C4244:  '=': conversion from 'int' to 'float', possible loss of data
-D:\facultate\PROIECT_SPG\Robotel\main.cpp(206,11): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
-D:\facultate\PROIECT_SPG\Robotel\main.cpp(207,11): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
-D:\facultate\PROIECT_SPG\Robotel\main.cpp(210,16): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
-D:\facultate\PROIECT_SPG\Robotel\main.cpp(211,16): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
-D:\facultate\PROIECT_SPG\Robotel\main.cpp(212,10): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
-D:\facultate\PROIECT_SPG\Robotel\main.cpp(213,10): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
-D:\facultate\PROIECT_SPG\Robotel\main.cpp(220,33): warning C4244:  'argument': conversion from 'double' to 'float', possible loss of data
-D:\facultate\PROIECT_SPG\Robotel\main.cpp(225,21): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
-D:\facultate\PROIECT_SPG\Robotel\main.cpp(306,94): warning C4267:  'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
-D:\facultate\PROIECT_SPG\Robotel\main.cpp(331,53): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
-  Generating Code...
-D:\facultate\PROIECT_SPG\Robotel\main.cpp(331,40): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
-  Robotel.vcxproj -> D:\facultate\PROIECT_SPG\Robotel\x64\Debug\Robotel.exe
+﻿  main.cpp
+D:\facultate\PROIECT_SPG\OpenGLRobot\Robotel\main.cpp(181,16): warning C4244:  '=': conversion from 'int' to 'float', possible loss of data
+D:\facultate\PROIECT_SPG\OpenGLRobot\Robotel\main.cpp(182,17): warning C4244:  '=': conversion from 'int' to 'float', possible loss of data
+D:\facultate\PROIECT_SPG\OpenGLRobot\Robotel\main.cpp(202,29): warning C4244:  '=': conversion from 'int' to 'float', possible loss of data
+D:\facultate\PROIECT_SPG\OpenGLRobot\Robotel\main.cpp(219,11): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+D:\facultate\PROIECT_SPG\OpenGLRobot\Robotel\main.cpp(220,11): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+D:\facultate\PROIECT_SPG\OpenGLRobot\Robotel\main.cpp(223,16): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+D:\facultate\PROIECT_SPG\OpenGLRobot\Robotel\main.cpp(224,16): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+D:\facultate\PROIECT_SPG\OpenGLRobot\Robotel\main.cpp(225,10): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+D:\facultate\PROIECT_SPG\OpenGLRobot\Robotel\main.cpp(226,10): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+D:\facultate\PROIECT_SPG\OpenGLRobot\Robotel\main.cpp(233,33): warning C4244:  'argument': conversion from 'double' to 'float', possible loss of data
+D:\facultate\PROIECT_SPG\OpenGLRobot\Robotel\main.cpp(238,21): warning C4244:  'initializing': conversion from 'double' to 'float', possible loss of data
+D:\facultate\PROIECT_SPG\OpenGLRobot\Robotel\main.cpp(325,53): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+D:\facultate\PROIECT_SPG\OpenGLRobot\Robotel\main.cpp(325,40): warning C4244:  'argument': conversion from 'float' to 'int', possible loss of data
+  Robotel.vcxproj -> D:\facultate\PROIECT_SPG\OpenGLRobot\Robotel\x64\Debug\Robotel.exe

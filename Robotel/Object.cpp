@@ -15,7 +15,10 @@ Object::Object(std::string numeFisier, Shader* shader, TextureInfo* textureInfoD
 	this->model = glm::mat4(1.0f);
 	this->normal = glm::mat4(1.0f);
 	this->shader = shader;
-
+}
+void Object::SetVAO(int VAO)
+{
+	this->VAO = VAO;
 }
 void Object::ResetModelMatrix()
 {
@@ -30,7 +33,6 @@ glm::mat4 Object::GetModelMatrix()
 void Object::Translate(glm::vec3 translate)
 {
     this->model = glm::translate(this->model, glm::vec3(translate.x, translate.y, translate.z));
-	cout<<"b\n";
 }
 
 void Object::Rotate(float angle1, glm::vec3 rotationAxis)
@@ -55,6 +57,23 @@ Shader* Object::GetShader()
 
 void Object::Draw()
 {
+	//folosire shader
+	shader->use();
+	//setare parametri shader
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textureInfo->texID);
+	shader->setInt("material.diffuse", 0);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, textureInfo->specTexID);
+	shader->setInt("material.specular", 1);
+	shader->setFloat("material.shininess", material.specularExponent);
+	shader->setMat4("model", model);
+
+	//bind la VAO
+	glBindVertexArray(VAO);
+	//apel functie desenare
+	glDrawElements(GL_TRIANGLES, (*indexBuff).size(), GL_UNSIGNED_INT, (void*)0);
 }
 
 
