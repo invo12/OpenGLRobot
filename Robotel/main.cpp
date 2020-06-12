@@ -4,60 +4,17 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
+#include <vector>
 #include <string>
 #include <fstream>
 
-#include "Object.h"
+#include "StaticObject.h"
 #include "Shader.h"
 #include "Camera.h"
 #include "stb_image.h"
 
 using namespace std;
 #pragma region Declaratii
-float vertices[] = {
-	// positions          // normals           // texture coords
-	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
-	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-
-	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
-
-	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-
-	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-	 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-
-	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-
-	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
-	 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
-};
 
 glm::vec3 cubePositions[] = {
 		glm::vec3(0.0f,  0.0f,  0.0f),
@@ -89,7 +46,7 @@ glm::vec3 lightPos(-0.5f, 3.0f, -4.0f);
 //buffere si variabile de stare
 unsigned int VBO, VAO, EBO;
 
-unsigned int grassTexture, brickTexture, woodTexture, cabinaTexture;
+unsigned int grassTexture, brickTexture, woodTexture, dulapTexture;
 unsigned int woodSpecular;
 
 bool wireframe = false;
@@ -99,7 +56,17 @@ bool night = false;
 
 Camera* mainCamera;
 Shader* directionalShader, * flashShader;
-Object* cabin;
+vector<StaticObject*> dulapuri;
+#pragma endregion
+
+#pragma region Utilitare
+void changeAllShaders(Shader* shader)
+{
+	for (int i = 0; i < 10; ++i)
+	{
+		dulapuri[i]->SetShader(shader);
+	}
+}
 #pragma endregion
 
 #pragma region Initializari
@@ -116,10 +83,10 @@ void initBuffers()
 
 	//pune in buffer informatiile
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, cabin->GetVertexBuffer().size() * sizeof(float), &cabin->GetVertexBuffer()[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, dulapuri[0]->GetVertexBuffer().size() * sizeof(float), &dulapuri[0]->GetVertexBuffer()[0], GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, cabin->GetIndexBuffer().size() * sizeof(unsigned int), &cabin->GetIndexBuffer()[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, dulapuri[0]->GetIndexBuffer().size() * sizeof(unsigned int), &dulapuri[0]->GetIndexBuffer()[0], GL_STATIC_DRAW);
 
 	//seteaza atributele
 	//pozitia
@@ -164,15 +131,28 @@ void initTextures()
 	loadTexture("grassTexture.jpg", grassTexture);
 	loadTexture("brickTexture.jpg", brickTexture);
 	loadTexture("wood.jpg", woodTexture);
-	loadTexture("woodSpecular.jpg", woodSpecular);
-	loadTexture("Cabina.jpg", cabinaTexture);
+	loadTexture("Cabina_specular.jpg", woodSpecular);
+	loadTexture("Cabina.jpg", dulapTexture);
+}
+
+void initShaders()
+{
+	directionalShader = new Shader("./Shaders/vertex/lightVertex.vert", "./Shaders/fragment/directionalLight.frag");
+	flashShader = new Shader("./Shaders/vertex/lightVertex.vert", "./Shaders/fragment/flashLight.frag");
+}
+void initStaticObjects()
+{
+	for (int i = 0; i < 10; ++i)
+	{
+		dulapuri.push_back(new StaticObject("Cabina", (night ? flashShader : directionalShader), new TextureInfo{ dulapTexture, 0, 0 }));
+	}
 }
 
 void initAll()
 {
-	directionalShader = new Shader("./Shaders/vertex/lightVertex.vert", "./Shaders/fragment/directionalLight.frag");
-	flashShader = new Shader("./Shaders/vertex/lightVertex.vert", "./Shaders/fragment/flashLight.frag");
-	cabin = new Object("Cabina", (night ? flashShader : directionalShader), new TextureInfo{ cabinaTexture, 0, 0 });
+	initShaders();
+	initStaticObjects();
+	
 	initBuffers();
 	initTextures();
 
@@ -210,10 +190,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 	if (key == GLFW_KEY_L && action == GLFW_PRESS)
 	{
+		
 		if (!night)
-			cabin->SetShader(flashShader);
+			changeAllShaders(flashShader);
 		else
-			cabin->SetShader(directionalShader);
+			changeAllShaders(directionalShader);
 		night = !night;
 	}
 }
@@ -266,36 +247,36 @@ void processInput(GLFWwindow* window)
 void draw()
 {
 	//program
-	cabin->GetShader()->use();
-	cabin->GetShader()->setVec3("light.position", lightPos);
-	cabin->GetShader()->setVec3("viewPos", mainCamera->position);
+	dulapuri[0]->GetShader()->use();
+	dulapuri[0]->GetShader()->setVec3("light.position", lightPos);
+	dulapuri[0]->GetShader()->setVec3("viewPos", mainCamera->position);
 	
 	//light
-	cabin->GetShader()->setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
-	cabin->GetShader()->setVec3("light.diffuse", 0.7f, 0.7f, 0.7f);
-	cabin->GetShader()->setVec3("light.specular", 1.0f, 1.0f, 1.0f);
-	cabin->GetShader()->setVec3("light.direction", -0.2f, -1.0f, -0.3f);
+	dulapuri[0]->GetShader()->setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+	dulapuri[0]->GetShader()->setVec3("light.diffuse", 0.7f, 0.7f, 0.7f);
+	dulapuri[0]->GetShader()->setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+	dulapuri[0]->GetShader()->setVec3("light.direction", -0.2f, -1.0f, -0.3f);
 	if (night)
 	{
-		cabin->GetShader()->setFloat("light.constant", 1.0f);
-		cabin->GetShader()->setFloat("light.linear", 0.09f);
-		cabin->GetShader()->setFloat("light.quadratic", 0.032f);
+		dulapuri[0]->GetShader()->setFloat("light.constant", 1.0f);
+		dulapuri[0]->GetShader()->setFloat("light.linear", 0.09f);
+		dulapuri[0]->GetShader()->setFloat("light.quadratic", 0.032f);
 
-		cabin->GetShader()->setVec3("light.position", mainCamera->position);
-		cabin->GetShader()->setVec3("light.direction", mainCamera->front);
-		cabin->GetShader()->setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
-		cabin->GetShader()->setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
+		dulapuri[0]->GetShader()->setVec3("light.position", mainCamera->position);
+		dulapuri[0]->GetShader()->setVec3("light.direction", mainCamera->front);
+		dulapuri[0]->GetShader()->setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
+		dulapuri[0]->GetShader()->setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
 	}
 	//material proprietes
-	cabin->GetShader()->setFloat("material.shininess", 32.0f);
+	dulapuri[0]->GetShader()->setFloat("material.shininess", 32.0f);
 	//material
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, cabinaTexture);
-	cabin->GetShader()->setInt("material.diffuse", 0);
+	glBindTexture(GL_TEXTURE_2D, dulapTexture);
+	dulapuri[0]->GetShader()->setInt("material.diffuse", 0);
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, woodSpecular);
-	cabin->GetShader()->setInt("material.specular", 1);
+	dulapuri[0]->GetShader()->setInt("material.specular", 1);
 	
 
 	//transformari
@@ -309,29 +290,20 @@ void draw()
 
 
 	//set uniform variables
-	int modelLoc = glGetUniformLocation(cabin->GetShader()->id, "model");
+	int modelLoc = glGetUniformLocation(dulapuri[0]->GetShader()->id, "model");
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-	int viewLoc = glGetUniformLocation(cabin->GetShader()->id, "view");
+	int viewLoc = glGetUniformLocation(dulapuri[0]->GetShader()->id, "view");
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	int projectionLoc = glGetUniformLocation(cabin->GetShader()->id, "projection");
+	int projectionLoc = glGetUniformLocation(dulapuri[0]->GetShader()->id, "projection");
 	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 	
 
 
 	//bind VAO for objects
+	
 	glBindVertexArray(VAO);
-
-	for (int i = 0; i < 10; ++i)
-	{
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, cubePositions[i]);
-		float angle = 20.0f * (i+1);
-		model = glm::rotate(model, glm::radians(angle) * (i%2 == 0 ? 1 : -1), glm::vec3(1.0f, 0.3f, 0.5f));
-		glm::mat3 normalMatrix(transpose(inverse(model)));
-		cabin->GetShader()->setMat3("normalMatrix", normalMatrix);
-		cabin->GetShader()->setMat4("model", model);
-		glDrawElements(GL_TRIANGLES, cabin->GetIndexBuffer().size(), GL_UNSIGNED_INT, (void*)0);
-	}
+	dulapuri[0]->Draw();
+	glDrawElements(GL_TRIANGLES, dulapuri[0]->GetIndexBuffer().size(), GL_UNSIGNED_INT, (void*)0);
 }
 
 #pragma endregion
@@ -344,11 +316,9 @@ void deleteAll()
 	delete directionalShader;
 	delete flashShader;
 	delete mainCamera;
-	delete cabin;
+	dulapuri.clear();
 }
 #pragma endregion
-
-
 
 int main()
 {
@@ -375,15 +345,9 @@ int main()
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 
-	///////////////////////////////////////
-	//AICI INITIALIZAM ARRAY-UL DE VERTICES
-	///////////////////////////////////////
-	//initializeVertexArrayFromFile("triunghi.txt");
-	
-	///////////////////////////////////////
-	//AICI INITIALIZAM BUFFERELE///////////
-	///////////////////////////////////////
+	//initializare
 	initAll();
+
 	//keep the window open
 	while (!glfwWindowShouldClose(window))
 	{
@@ -400,14 +364,8 @@ int main()
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-	///////////////////////////////////////
-	//AICI DEALOCAM ARRAY-UL DE VERTICES
-	///////////////////////////////////////
-
-
-	//dealocate resources
+	//dealocare resources
 	deleteAll();
 	glfwTerminate();
 	return 0;
-
 }
