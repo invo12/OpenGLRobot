@@ -115,6 +115,7 @@ void Object::Translate(glm::vec3 translate)
 {
 	position += translate;
     this->model = glm::translate(this->model, glm::vec3(translate.x, translate.y, translate.z));
+	normal = glm::mat3(glm::transpose(glm::inverse(model)));
 }
 
 void Object::Rotate(float degAngle, Axis rotationAxis)
@@ -136,6 +137,7 @@ void Object::Rotate(float degAngle, Axis rotationAxis)
 		rotation.z += degAngle;
 	}
     this->model = glm::rotate(this->model, glm::radians(degAngle), axisVector);
+	normal = glm::mat3(glm::transpose(glm::inverse(model)));
 }
 
 void Object::SetPosition(glm::vec3 position)
@@ -154,6 +156,7 @@ void Object::SetScale(glm::vec3 scale)
 {
 	this->scale = scale;
     this->model = glm::scale(this->model, scale);
+	normal = glm::mat3(glm::transpose(glm::inverse(model)));
 }
 #pragma endregion
 
@@ -189,6 +192,7 @@ void Object::Draw()
 	shader->setFloat("material.shininess", material.specularExponent);
 	
 	shader->setMat4("model", model);
+	shader->setMat3("normalMatrix", normal);
 
 	//bind la VAO
 	glBindVertexArray(VAO);
@@ -209,6 +213,5 @@ std::vector<float> Object::GetVertexBuffer()
 std::vector<unsigned int> Object::GetIndexBuffer()
 {
     return *this->indexBuff;
-
 }
 
