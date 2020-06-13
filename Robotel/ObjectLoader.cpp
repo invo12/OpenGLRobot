@@ -47,6 +47,9 @@ vector<float>* ObjectLoader::GetVertexBuffer(string name)
 					vertexBuff.push_back(0);
 					vertexBuff.push_back(0);
 				}
+				vertexBuff.push_back(mesh->mTangents[v].x);
+				vertexBuff.push_back(mesh->mTangents[v].y);
+				vertexBuff.push_back(mesh->mTangents[v].z);
 			}
 			vertexMap[name] = vertexBuff;
 			return &vertexMap[name];

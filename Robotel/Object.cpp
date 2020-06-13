@@ -23,16 +23,20 @@ void Object::initBuffers()
 
 		//seteaza atributele
 		//pozitia
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
 
-		//normale
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+		////normale
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(3 * sizeof(float)));
 		glEnableVertexAttribArray(1);
 
 		//texturi
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(6 * sizeof(float)));
 		glEnableVertexAttribArray(2);
+
+		//tangente
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(8 * sizeof(float)));
+		glEnableVertexAttribArray(3);
 
 		//dai unbind
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -108,7 +112,6 @@ glm::mat4 Object::GetModelMatrix()
     return this->model;
 }
 
-
 #pragma region Transformations
 
 void Object::Translate(glm::vec3 translate)
@@ -160,7 +163,6 @@ void Object::SetScale(glm::vec3 scale)
 }
 #pragma endregion
 
-
 string Object::GetName()
 {
 	return name;
@@ -200,6 +202,7 @@ void Object::Draw()
 
 	//bind la VAO
 	glBindVertexArray(VAO);
+
 	//apel functie desenare
 	glDrawElements(GL_TRIANGLES, (*indexBuff).size(), GL_UNSIGNED_INT, (void*)0);
 }

@@ -179,16 +179,16 @@ void draw()
 #pragma region Light&Camera Settings
 
 	//program
-	dulapuri[0]->GetShader()->setVec3("light.position", lightPos);
 	dulapuri[0]->GetShader()->setVec3("viewPos", mainCamera->position);
 	
 	//light
 	dulapuri[0]->GetShader()->setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
 	dulapuri[0]->GetShader()->setVec3("light.diffuse", 0.7f, 0.7f, 0.7f);
 	dulapuri[0]->GetShader()->setVec3("light.specular", 1.0f, 1.0f, 1.0f);
-	dulapuri[0]->GetShader()->setVec3("light.direction", -0.2f, -1.0f, -0.3f);
+	dulapuri[0]->GetShader()->setVec3("light.direction", -0.2f, -1.0f, 10.0f);
 	if (night)
 	{
+		dulapuri[0]->GetShader()->setVec3("light.position", lightPos);
 		dulapuri[0]->GetShader()->setFloat("light.constant", 1.0f);
 		dulapuri[0]->GetShader()->setFloat("light.linear", 0.09f);
 		dulapuri[0]->GetShader()->setFloat("light.quadratic", 0.032f);
