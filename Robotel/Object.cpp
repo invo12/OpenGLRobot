@@ -51,6 +51,8 @@ void Object::initBuffers()
 	}
 }
 
+
+
 Object::Object(std::string numeFisier, Shader* shader, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
 {
 	//set name
@@ -117,30 +119,24 @@ glm::mat4 Object::GetModelMatrix()
 void Object::Translate(glm::vec3 translate)
 {
 	position += translate;
-    this->model = glm::translate(this->model, glm::vec3(translate.x, translate.y, translate.z));
-	normal = glm::mat3(glm::transpose(glm::inverse(model)));
+	calcModel();
 }
 
 void Object::Rotate(float degAngle, Axis rotationAxis)
 {
-	glm::vec3 axisVector(1,0,0);
 	if (rotationAxis == Axis::x)
 	{
-		axisVector = glm::vec3(1, 0, 0);
 		rotation.x += degAngle;
 	}
 	else if (rotationAxis == Axis::y)
 	{
-		axisVector = glm::vec3(0, 1, 0);
 		rotation.y += degAngle;
 	}
 	else
 	{
-		axisVector = glm::vec3(0, 0, 1);
 		rotation.z += degAngle;
 	}
-    this->model = glm::rotate(this->model, glm::radians(degAngle), axisVector);
-	normal = glm::mat3(glm::transpose(glm::inverse(model)));
+	calcModel();
 }
 
 void Object::SetPosition(glm::vec3 position)
@@ -158,7 +154,20 @@ void Object::SetRotation(glm::vec3 rotation)
 void Object::SetScale(glm::vec3 scale)
 {
 	this->scale = scale;
-    this->model = glm::scale(this->model, scale);
+	calcModel();
+}
+
+void Object::calcModel()
+{
+	this->model = glm::mat4(1.0f);
+	this->model = glm::translate(this->model,position);
+	
+	this->model = glm::rotate(this->model, glm::radians(rotation.x), glm::vec3(1, 0, 0));
+	this->model = glm::rotate(this->model, glm::radians(rotation.y), glm::vec3(0, 1, 0));
+	this->model = glm::rotate(this->model, glm::radians(rotation.z), glm::vec3(0, 0, 1));
+	
+	this->model = glm::scale(this->model, scale);
+
 	normal = glm::mat3(glm::transpose(glm::inverse(model)));
 }
 #pragma endregion

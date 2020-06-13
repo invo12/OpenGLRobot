@@ -49,7 +49,7 @@ private:
 
 	//initialize VAO, VBO, EBO
 	void initBuffers();
-
+	void calcModel();
 public:
 	Object(std::string numeFisier, Shader* shader, glm::vec3 position = glm::vec3(0), glm::vec3 rotation = glm::vec3(0), glm::vec3 scale = glm::vec3(0));
 	~Object();
