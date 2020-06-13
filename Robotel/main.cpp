@@ -79,10 +79,10 @@ void initStaticObjects()
 {
 	for (int i = 0; i < 10; ++i)
 	{
-		dulapuri.push_back(new Object("Cabina", (night ? flashShader : directionalShader)));
+		dulapuri.push_back(new Object("cargo", (night ? flashShader : directionalShader)));
 		dulapuri[i]->SetPosition(glm::vec3(5, 5, 5 * i));
 		dulapuri[i]->Rotate(30.0f * i, Axis::z);
-		dulapuri[i]->SetScale(glm::vec3(2, 2, 1));
+		dulapuri[i]->SetScale(glm::vec3(0.01f, 0.01f, 0.01f));
 	}
 }
 
