@@ -4,9 +4,12 @@
 map<string, vector<float>> ObjectLoader::vertexMap;
 map<string, vector<unsigned int>> ObjectLoader::indexMap;
 map<string, Material> ObjectLoader::materialMap;
+map<string, glm::vec3> ObjectLoader::min;
+map<string, glm::vec3> ObjectLoader::max;
 
 vector<float>* ObjectLoader::GetVertexBuffer(string name)
 {
+	string initialName = name;
 	name = name + ".obj";
 	if (vertexMap.find(name) != vertexMap.end()) {
 		return &vertexMap[name];
@@ -27,12 +30,39 @@ vector<float>* ObjectLoader::GetVertexBuffer(string name)
 		if (modelScene)
 		{
 			mesh = modelScene->mMeshes[0];
+			glm::vec3 mini(mesh->mVertices[0].x, mesh->mVertices[0].y, mesh->mVertices[0].z);
+			glm::vec3 maxi(mesh->mVertices[0].x, mesh->mVertices[0].y, mesh->mVertices[0].z);
 			aiFace* face;
 			for (unsigned int v = 0; v < mesh->mNumVertices; v++)
 			{
 				vertexBuff.push_back(mesh->mVertices[v].x);
 				vertexBuff.push_back(mesh->mVertices[v].y);
 				vertexBuff.push_back(mesh->mVertices[v].z);
+
+				if (mesh->mVertices[v].x < mini.x)
+				{
+					mini.x = mesh->mVertices[v].x;
+				}
+				if (mesh->mVertices[v].y < mini.y)
+				{
+					mini.y = mesh->mVertices[v].y;
+				}
+				if (mesh->mVertices[v].z < mini.z)
+				{
+					mini.z = mesh->mVertices[v].z;
+				}
+				if (mesh->mVertices[v].x > maxi.x)
+				{
+					maxi.x = mesh->mVertices[v].x;
+				}
+				if (mesh->mVertices[v].y > maxi.y)
+				{
+					maxi.y = mesh->mVertices[v].y;
+				}
+				if (mesh->mVertices[v].z > maxi.z)
+				{
+					maxi.z = mesh->mVertices[v].z;
+				}
 
 				vertexBuff.push_back(mesh->mNormals[v].x);
 				vertexBuff.push_back(mesh->mNormals[v].y);
@@ -51,6 +81,9 @@ vector<float>* ObjectLoader::GetVertexBuffer(string name)
 				vertexBuff.push_back(mesh->mTangents[v].y);
 				vertexBuff.push_back(mesh->mTangents[v].z);
 			}
+			
+			min[initialName] = mini;
+			max[initialName] = maxi;
 			vertexMap[name] = vertexBuff;
 			return &vertexMap[name];
 		}
@@ -153,4 +186,14 @@ Material ObjectLoader::GetMaterial(string name)
 			return materialMap[name];
 		}
 	}
+}
+
+glm::vec3 ObjectLoader::GetColliderMin(string name)
+{
+	return min[name];
+}
+
+glm::vec3 ObjectLoader::GetColliderMax(string name)
+{
+	return max[name];
 }

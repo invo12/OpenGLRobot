@@ -15,6 +15,7 @@
 #include "ObjectLoader.h"
 #include "TextureManager.h"
 #include "BufferManager.h"
+#include "BoxCollider.h"
 
 enum class Axis {
 	x,
@@ -28,8 +29,11 @@ private:
 	//buffers
 	std::vector<float>* vertexBuff;
 	std::vector<unsigned int>* indexBuff;
-	unsigned int VAO;
+	unsigned int VAO, VAO1;
 	
+	//collider
+	BoxCollider *collider;
+
 	//shader
 	Shader* shader;
 
@@ -51,7 +55,7 @@ private:
 	void initBuffers();
 	void calcModel();
 public:
-	Object(std::string numeFisier, Shader* shader, glm::vec3 position = glm::vec3(0), glm::vec3 rotation = glm::vec3(0), glm::vec3 scale = glm::vec3(0));
+	Object(std::string numeFisier, Shader* shader, glm::vec3 position = glm::vec3(0), glm::vec3 rotation = glm::vec3(0), glm::vec3 scale = glm::vec3(1));
 	~Object();
 
 	std::vector<float> GetVertexBuffer();
@@ -61,6 +65,7 @@ public:
 	void SetShader(Shader* shader);
 	Shader* GetShader();
 
+	BoxCollider* GetCollider();
 	//reset position, rotation and scale
 	void Reset();
 	glm::mat4 GetModelMatrix();

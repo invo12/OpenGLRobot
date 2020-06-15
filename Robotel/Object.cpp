@@ -65,6 +65,9 @@ Object::Object(std::string numeFisier, Shader* shader, glm::vec3 position, glm::
 	vertexBuff = ObjectLoader::GetVertexBuffer(numeFisier);
 	indexBuff = ObjectLoader::GetIndexBuffer(numeFisier);
 
+	//initialize box collider ONLY AFTER VERTEX BUFFER
+	this->collider = new BoxCollider(ObjectLoader::GetColliderMin(name), ObjectLoader::GetColliderMax(name));
+
 	//initialize VAO, VBO, EBO
 	initBuffers();
 
@@ -93,7 +96,7 @@ Object::Object(std::string numeFisier, Shader* shader, glm::vec3 position, glm::
 	}
 	if (scale != glm::vec3(0))
 	{
-
+		SetScale(scale);
 	}
 }
 void Object::SetVAO(int VAO)
@@ -169,6 +172,29 @@ void Object::calcModel()
 	this->model = glm::scale(this->model, scale);
 
 	normal = glm::mat3(glm::transpose(glm::inverse(model)));
+	glm::vec4 a = model * glm::vec4(this->collider->GetMax(), 1);
+	glm::vec4 b = model * glm::vec4(this->collider->GetMin(), 1);
+	
+	//RESET THE COLLIDER
+	this->collider = new BoxCollider(ObjectLoader::GetColliderMin(name), ObjectLoader::GetColliderMax(name));
+	glm::vec3 mini = this->collider->GetMin();
+	glm::vec3 maxi = this->collider->GetMax();
+	vector<glm::vec3> corners;
+	corners.push_back(mini);
+	corners.push_back(maxi);
+	corners.push_back(glm::vec3(mini.x, mini.y, maxi.z));
+	corners.push_back(glm::vec3(mini.x, maxi.y, maxi.z));
+	corners.push_back(glm::vec3(mini.x, maxi.y, mini.z));
+	corners.push_back(glm::vec3(maxi.x, mini.y, mini.z));
+	corners.push_back(glm::vec3(maxi.x, mini.y, maxi.z));
+	corners.push_back(glm::vec3(maxi.x, maxi.y, mini.z));
+	for (int i = 0; i < corners.size();++i)
+		corners[i] = glm::vec3(model * glm::vec4(corners[i], 1));
+	this->collider->SetBounds(corners);
+
+	/*std::cout << position.x << ' ' << position.y << ' ' << position.z << endl;
+	std::cout << rotation.x << ' ' << rotation.y << ' ' << rotation.z << endl;
+	std::cout << scale.x << ' ' << scale.y << ' ' << scale.z << endl << endl << endl;*/
 }
 #pragma endregion
 
@@ -185,6 +211,11 @@ void Object::SetShader(Shader* shader)
 Shader* Object::GetShader()
 {
     return this->shader;
+}
+
+BoxCollider* Object::GetCollider()
+{
+	return collider;
 }
 
 void Object::Draw()
@@ -218,7 +249,7 @@ void Object::Draw()
 
 Object::~Object()
 {
- 
+	delete collider;
 }
 
 std::vector<float> Object::GetVertexBuffer()

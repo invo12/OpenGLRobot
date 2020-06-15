@@ -39,6 +39,12 @@
     <ClCompile Include="BufferManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BoxCollider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ColliderManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="triunghi.txt">
@@ -67,30 +73,24 @@
     <ClInclude Include="stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BoxCollider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\vertex\basicVertex.vert">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="Shaders\vertex\lightVertex.vert">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Shaders\fragment\basicFragment.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Shaders\fragment\lightFragment.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Shaders\fragment\lightSource.frag">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="Shaders\fragment\directionalLight.frag">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Shaders\fragment\pointLight.frag">
+    <None Include="Shaders\fragment\flashLight.frag">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Shaders\fragment\flashLight.frag">
+    <None Include="Shaders\fragment\raycast.frag">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

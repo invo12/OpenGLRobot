@@ -25,9 +25,12 @@ struct TextureInfo {
 	unsigned int specTexID = 0;
 	unsigned int normalTexID;
 };
+
 class ObjectLoader
 { 
 private:
+	static map<string, glm::vec3> min;
+	static map<string, glm::vec3> max;
 	static map<string,vector<float>> vertexMap;
 	static map<string, vector<unsigned int>> indexMap;
 	static map<string, Material> materialMap;
@@ -35,5 +38,7 @@ public:
 	static vector<float>* GetVertexBuffer(string name);
 	static vector<unsigned int>* GetIndexBuffer(string name);
 	static Material GetMaterial(string name);
+	static glm::vec3 GetColliderMin(string name);
+	static glm::vec3 GetColliderMax(string name);
 };
 

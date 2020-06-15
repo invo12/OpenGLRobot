@@ -53,7 +53,7 @@ float angle = 0;
 bool night = false;
 
 Camera* mainCamera;
-Shader* directionalShader, * flashShader;
+Shader* directionalShader, * flashShader, *raycastShader;
 vector<Object*> dulapuri;
 #pragma endregion
 
@@ -65,6 +65,10 @@ void changeAllShaders(Shader* shader)
 		dulapuri[i]->SetShader(shader);
 	}
 }
+void emmitRay(int x, int y)
+{
+	cout << x <<' '<< y<<endl;
+}
 #pragma endregion
 
 #pragma region Initializari
@@ -73,6 +77,7 @@ void initShaders()
 {
 	directionalShader = new Shader("./Shaders/vertex/lightVertex.vert", "./Shaders/fragment/directionalLight.frag");
 	flashShader = new Shader("./Shaders/vertex/lightVertex.vert", "./Shaders/fragment/flashLight.frag");
+	raycastShader = new Shader("./Shaders/vertex/lightVertex.vert", "./Shaders/fragment/raycast.frag");
 }
 
 void initStaticObjects()
@@ -83,6 +88,11 @@ void initStaticObjects()
 		dulapuri[i]->SetPosition(glm::vec3(5, 5, 5 * i));
 		dulapuri[i]->Rotate(30.0f * i, Axis::z);
 		dulapuri[i]->SetScale(glm::vec3(0.01f, 0.01f, 0.01f));
+		std::cout << dulapuri[i]->GetCollider()->GetMin().x << ' ' << dulapuri[i]->GetCollider()->GetMin().y << ' ' << dulapuri[i]->GetCollider()->GetMin().z << std::endl;
+		std::cout << dulapuri[i]->GetCollider()->GetMax().x << ' ' << dulapuri[i]->GetCollider()->GetMax().y << ' ' << dulapuri[i]->GetCollider()->GetMax().z << std::endl;
+
+		/*std::cout << this->GetMin().x << ' ' << this->GetMin().y << ' ' << this->GetMin().z << std::endl;
+		std::cout << this->GetMax().x << ' ' << this->GetMax().y << ' ' << this->GetMax().z << std::endl;*/
 	}
 }
 
@@ -127,6 +137,85 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			changeAllShaders(directionalShader);
 		night = !night;
 	}
+	float f = 0.1f;
+	if (key == GLFW_KEY_UP && action == GLFW_PRESS)
+	{
+		dulapuri[0]->Translate(glm::vec3(0, 0, f));
+		bool revert = false;
+		for (int i = 1; i < 10; ++i)
+			if (dulapuri[0]->GetCollider()->Intersects(*dulapuri[i]->GetCollider()))
+			{
+				revert = true;
+				break;
+			}
+		if(revert)
+			dulapuri[0]->Translate(glm::vec3(0, 0, -f));
+	}
+	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
+	{
+		dulapuri[0]->Translate(glm::vec3(f, 0, 0));
+		bool revert = false;
+		for (int i = 1; i < 10; ++i)
+			if (dulapuri[0]->GetCollider()->Intersects(*dulapuri[i]->GetCollider()))
+			{
+				revert = true;
+				break;
+			}
+		if (revert)
+			dulapuri[0]->Translate(glm::vec3(-f, 0, 0));
+	}
+	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
+	{
+		dulapuri[0]->Translate(glm::vec3(-f, 0, 0));
+		bool revert = false;
+		for (int i = 1; i < 10; ++i)
+			if (dulapuri[0]->GetCollider()->Intersects(*dulapuri[i]->GetCollider()))
+			{
+				revert = true;
+				break;
+			}
+		if (revert)
+			dulapuri[0]->Translate(glm::vec3(f, 0, 0));
+	}
+	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
+	{
+		dulapuri[0]->Translate(glm::vec3(0, 0, -f));
+		bool revert = false;
+		for (int i = 1; i < 10; ++i)
+			if (dulapuri[0]->GetCollider()->Intersects(*dulapuri[i]->GetCollider()))
+			{
+				revert = true;
+				break;
+			}
+		if (revert)
+			dulapuri[0]->Translate(glm::vec3(0, 0, f));
+	}
+	if (key == GLFW_KEY_Z && action == GLFW_PRESS)
+	{
+		dulapuri[0]->Translate(glm::vec3(0, f, 0));
+		bool revert = false;
+		for (int i = 1; i < 10; ++i)
+			if (dulapuri[0]->GetCollider()->Intersects(*dulapuri[i]->GetCollider()))
+			{
+				revert = true;
+				break;
+			}
+		if (revert)
+			dulapuri[0]->Translate(glm::vec3(0, -f, 0));
+	}
+	if (key == GLFW_KEY_X && action == GLFW_PRESS)
+	{
+		dulapuri[0]->Translate(glm::vec3(0, -f, 0));
+		bool revert = false;
+		for (int i = 1; i < 10; ++i)
+			if (dulapuri[0]->GetCollider()->Intersects(*dulapuri[i]->GetCollider()))
+			{
+				revert = true;
+				break;
+			}
+		if (revert)
+			dulapuri[0]->Translate(glm::vec3(0, f, 0));
+	}
 }
 
 void mouse_callback(GLFWwindow* window, double xPos, double yPos)
@@ -168,6 +257,12 @@ void processInput(GLFWwindow* window)
 		mainCamera->ProcessKeyboard(LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		mainCamera->ProcessKeyboard(RIGHT, deltaTime);
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1))
+	{
+		double  x, y;
+		glfwGetCursorPos(window, &x, &y);
+		emmitRay(x, y);
+	}
 }
 
 #pragma endregion
@@ -223,6 +318,7 @@ void deleteAll()
 	BufferManager::DeleteBuffers();
 	delete directionalShader;
 	delete flashShader;
+	delete raycastShader;
 	delete mainCamera;
 	dulapuri.clear();
 }

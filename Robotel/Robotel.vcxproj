@@ -128,8 +128,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="BufferManager.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ColliderManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectLoader.cpp" />
@@ -141,8 +143,10 @@
     <Text Include="triunghi.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="BufferManager.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ColliderManager.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectLoader.h" />
     <ClInclude Include="Shader.h" />
@@ -150,13 +154,9 @@
     <ClInclude Include="TextureManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\fragment\basicFragment.frag" />
     <None Include="Shaders\fragment\directionalLight.frag" />
     <None Include="Shaders\fragment\flashLight.frag" />
-    <None Include="Shaders\fragment\lightFragment.frag" />
-    <None Include="Shaders\fragment\lightSource.frag" />
-    <None Include="Shaders\fragment\pointLight.frag" />
-    <None Include="Shaders\vertex\basicVertex.vert" />
+    <None Include="Shaders\fragment\raycast.frag" />
     <None Include="Shaders\vertex\lightVertex.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
