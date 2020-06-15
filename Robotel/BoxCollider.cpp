@@ -14,12 +14,12 @@ BoxCollider::BoxCollider(glm::vec3 min, glm::vec3 max)
 
 bool BoxCollider::Intersects(BoxCollider collider)
 {
-	std::cout << collider.GetMin().x << ' ' << collider.GetMin().y << ' ' << collider.GetMin().z << std::endl;
+	/*std::cout << collider.GetMin().x << ' ' << collider.GetMin().y << ' ' << collider.GetMin().z << std::endl;
 	std::cout << collider.GetMax().x << ' ' << collider.GetMax().y << ' ' << collider.GetMax().z << std::endl;
 
 	std::cout << this->GetMin().x << ' ' << this->GetMin().y << ' ' << this->GetMin().z << std::endl;
 	std::cout << this->GetMax().x << ' ' << this->GetMax().y << ' ' << this->GetMax().z << std::endl;
-	std::cout << std::endl;
+	std::cout << std::endl;*/
 	return isOverlapping1D(collider.GetMin().x, collider.GetMax().x, this->min.x, this->max.x) &&
 		isOverlapping1D(collider.GetMin().y, collider.GetMax().y, this->min.y, this->max.y) &&
 		isOverlapping1D(collider.GetMin().z, collider.GetMax().z, this->min.z, this->max.z);

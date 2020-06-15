@@ -54,15 +54,16 @@ bool night = false;
 
 Camera* mainCamera;
 Shader* directionalShader, * flashShader, *raycastShader;
-vector<Object*> dulapuri;
+Object* player;
+vector<Object*> scena;
 #pragma endregion
 
 #pragma region Utilitare
 void changeAllShaders(Shader* shader)
 {
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < scena.size(); ++i)
 	{
-		dulapuri[i]->SetShader(shader);
+		scena[i]->SetShader(shader);
 	}
 }
 void emmitRay(int x, int y)
@@ -82,18 +83,71 @@ void initShaders()
 
 void initStaticObjects()
 {
-	for (int i = 0; i < 10; ++i)
-	{
-		dulapuri.push_back(new Object("cargo", (night ? flashShader : directionalShader)));
-		dulapuri[i]->SetPosition(glm::vec3(5, 5, 5 * i));
-		dulapuri[i]->Rotate(30.0f * i, Axis::z);
-		dulapuri[i]->SetScale(glm::vec3(0.01f, 0.01f, 0.01f));
-		std::cout << dulapuri[i]->GetCollider()->GetMin().x << ' ' << dulapuri[i]->GetCollider()->GetMin().y << ' ' << dulapuri[i]->GetCollider()->GetMin().z << std::endl;
-		std::cout << dulapuri[i]->GetCollider()->GetMax().x << ' ' << dulapuri[i]->GetCollider()->GetMax().y << ' ' << dulapuri[i]->GetCollider()->GetMax().z << std::endl;
-
-		/*std::cout << this->GetMin().x << ' ' << this->GetMin().y << ' ' << this->GetMin().z << std::endl;
-		std::cout << this->GetMax().x << ' ' << this->GetMax().y << ' ' << this->GetMax().z << std::endl;*/
+	float tileScaleX = 0.1f;
+	float tileScaleZ = 0.1f;
+	float tileScaleY = 0.001f;
+	int tileNumX = 15;
+	int tileNumZ = 15;
+	for (int i = 0; i < tileNumX; ++i) {
+		for (int j = 0; j < tileNumZ; ++j) {
+			scena.push_back(new Object("Assets/iarba", (night ? flashShader : directionalShader)));
+			scena[scena.size() - 1]->SetScale(glm::vec3(tileScaleX, tileScaleY, tileScaleZ));
+			scena[scena.size() - 1]->SetPosition(glm::vec3(i * 2.0f * tileScaleX, 0, j * 2.0f * tileScaleZ));
+		}
 	}
+	for (float height = 0.1f; height <= 0.3f; height += 0.2f) {
+		for (int i = 0; i < 2; ++i) {
+			for (int j = 0; j < tileNumX; ++j) {
+				scena.push_back(new Object("Assets/wall", (night ? flashShader : directionalShader)));
+				if (i == 0) {
+					scena[scena.size() - 1]->SetPosition(glm::vec3(j * 2.0f * tileScaleX, height, -tileScaleZ));
+				}
+				else {
+					scena[scena.size() - 1]->SetPosition(glm::vec3(j * 2.0f * tileScaleX, height, 2.0f * tileNumZ * tileScaleZ - tileScaleZ));
+				}
+				scena[scena.size() - 1]->SetRotation(glm::vec3(0, 0, 90));
+				scena[scena.size() - 1]->SetScale(glm::vec3(0.1f, 0.1f, 0.001f));
+			}
+		}
+		for (int i = 0; i < 2; ++i) {
+			for (int j = 0; j < tileNumZ; ++j) {
+				if (i == 0) {
+					scena.push_back(new Object("Assets/wall", (night ? flashShader : directionalShader)));
+					scena[scena.size() - 1]->SetPosition(glm::vec3(-tileScaleX, height, j * 2.0f * tileScaleZ));
+				}
+				else {
+					scena.push_back(new Object("Assets/wall", (night ? flashShader : directionalShader)));
+					scena[scena.size() - 1]->SetPosition(glm::vec3(2.0f * tileNumX * tileScaleX - tileScaleX, height, j * 2.0f * tileScaleZ));
+				}
+				scena[scena.size() - 1]->SetRotation(glm::vec3(0, 90, 90));
+				scena[scena.size() - 1]->SetScale(glm::vec3(0.1f, 0.1f, 0.001f));
+			}
+		}
+	}
+	scena.push_back(new Object("Assets/cabinet", (night ? flashShader : directionalShader)));
+	scena[scena.size() - 1]->SetScale(glm::vec3(0.06f, 0.06f, 0.06f));
+	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 180, 0));
+	scena[scena.size() - 1]->SetPosition(glm::vec3(0, 0, 0));
+
+	scena.push_back(new Object("Assets/cargo", (night ? flashShader : directionalShader)));
+	scena[scena.size() - 1]->SetScale(glm::vec3(0.0015f, 0.0015f, 0.0015f));
+	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 35, 0));
+	scena[scena.size() - 1]->SetPosition(glm::vec3(2.3f, 0, 0.3f));
+
+	scena.push_back(new Object("Assets/cargo", (night ? flashShader : directionalShader)));
+	scena[scena.size() - 1]->SetScale(glm::vec3(0.0015f, 0.0015f, 0.0015f));
+	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 130, 0));
+	scena[scena.size() - 1]->SetPosition(glm::vec3(1.3f, 0, 0.7f));
+	player = scena[scena.size() - 1];
+	scena.push_back(new Object("Assets/WoodenCrate", (night ? flashShader : directionalShader)));
+	scena[scena.size() - 1]->SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
+	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 10, 0));
+	scena[scena.size() - 1]->SetPosition(glm::vec3(0.2, 0, 2.7f));
+
+	scena.push_back(new Object("Assets/roaba", (night ? flashShader : directionalShader)));
+	scena[scena.size() - 1]->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
+	scena[scena.size() - 1]->SetRotation(glm::vec3(0, -40, 0));
+	scena[scena.size() - 1]->SetPosition(glm::vec3(0.3f, 0, 1.7f));
 }
 
 void initAll()
@@ -137,85 +191,85 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			changeAllShaders(directionalShader);
 		night = !night;
 	}
-	float f = 0.1f;
+	/*float f = 0.01f;
 	if (key == GLFW_KEY_UP && action == GLFW_PRESS)
 	{
-		dulapuri[0]->Translate(glm::vec3(0, 0, f));
+		player->Translate(glm::vec3(0, 0, f));
 		bool revert = false;
-		for (int i = 1; i < 10; ++i)
-			if (dulapuri[0]->GetCollider()->Intersects(*dulapuri[i]->GetCollider()))
+		for (int i = 1; i < scena.size(); ++i)
+			if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
 			{
 				revert = true;
 				break;
 			}
 		if(revert)
-			dulapuri[0]->Translate(glm::vec3(0, 0, -f));
+			player->Translate(glm::vec3(0, 0, -f));
 	}
 	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
 	{
-		dulapuri[0]->Translate(glm::vec3(f, 0, 0));
+		player->Translate(glm::vec3(f, 0, 0));
 		bool revert = false;
-		for (int i = 1; i < 10; ++i)
-			if (dulapuri[0]->GetCollider()->Intersects(*dulapuri[i]->GetCollider()))
+		for (int i = 1; i < scena.size(); ++i)
+			if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
 			{
 				revert = true;
 				break;
 			}
 		if (revert)
-			dulapuri[0]->Translate(glm::vec3(-f, 0, 0));
+			player->Translate(glm::vec3(-f, 0, 0));
 	}
 	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
 	{
-		dulapuri[0]->Translate(glm::vec3(-f, 0, 0));
+		player->Translate(glm::vec3(-f, 0, 0));
 		bool revert = false;
-		for (int i = 1; i < 10; ++i)
-			if (dulapuri[0]->GetCollider()->Intersects(*dulapuri[i]->GetCollider()))
+		for (int i = 1; i < scena.size(); ++i)
+			if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
 			{
 				revert = true;
 				break;
 			}
 		if (revert)
-			dulapuri[0]->Translate(glm::vec3(f, 0, 0));
+			player->Translate(glm::vec3(f, 0, 0));
 	}
 	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
 	{
-		dulapuri[0]->Translate(glm::vec3(0, 0, -f));
+		player->Translate(glm::vec3(0, 0, -f));
 		bool revert = false;
-		for (int i = 1; i < 10; ++i)
-			if (dulapuri[0]->GetCollider()->Intersects(*dulapuri[i]->GetCollider()))
+		for (int i = 1; i < scena.size(); ++i)
+			if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
 			{
 				revert = true;
 				break;
 			}
 		if (revert)
-			dulapuri[0]->Translate(glm::vec3(0, 0, f));
+			player->Translate(glm::vec3(0, 0, f));
 	}
 	if (key == GLFW_KEY_Z && action == GLFW_PRESS)
 	{
-		dulapuri[0]->Translate(glm::vec3(0, f, 0));
+		player->Translate(glm::vec3(0, f, 0));
 		bool revert = false;
 		for (int i = 1; i < 10; ++i)
-			if (dulapuri[0]->GetCollider()->Intersects(*dulapuri[i]->GetCollider()))
+			if (player->GetCollider()->Intersects(*scena[i]->GetCollider()))
 			{
 				revert = true;
 				break;
 			}
 		if (revert)
-			dulapuri[0]->Translate(glm::vec3(0, -f, 0));
+			player->Translate(glm::vec3(0, -f, 0));
 	}
 	if (key == GLFW_KEY_X && action == GLFW_PRESS)
 	{
-		dulapuri[0]->Translate(glm::vec3(0, -f, 0));
+		player->Translate(glm::vec3(0, -f, 0));
 		bool revert = false;
 		for (int i = 1; i < 10; ++i)
-			if (dulapuri[0]->GetCollider()->Intersects(*dulapuri[i]->GetCollider()))
+			if (player->GetCollider()->Intersects(*scena[i]->GetCollider()))
 			{
 				revert = true;
 				break;
 			}
 		if (revert)
-			dulapuri[0]->Translate(glm::vec3(0, f, 0));
-	}
+			player->Translate(glm::vec3(0, f, 0));
+	}*/
 }
 
 void mouse_callback(GLFWwindow* window, double xPos, double yPos)
@@ -263,6 +317,85 @@ void processInput(GLFWwindow* window)
 		glfwGetCursorPos(window, &x, &y);
 		emmitRay(x, y);
 	}
+	float f = 0.01f;
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		player->Translate(glm::vec3(0, 0, f));
+		bool revert = false;
+		for (int i = 1; i < scena.size(); ++i)
+			if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
+			{
+				revert = true;
+				break;
+			}
+		if (revert)
+			player->Translate(glm::vec3(0, 0, -f));
+	}
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+	{
+		player->Translate(glm::vec3(f, 0, 0));
+		bool revert = false;
+		for (int i = 1; i < scena.size(); ++i)
+			if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
+			{
+				revert = true;
+				break;
+			}
+		if (revert)
+			player->Translate(glm::vec3(-f, 0, 0));
+	}
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+	{
+		player->Translate(glm::vec3(-f, 0, 0));
+		bool revert = false;
+		for (int i = 1; i < scena.size(); ++i)
+			if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
+			{
+				revert = true;
+				break;
+			}
+		if (revert)
+			player->Translate(glm::vec3(f, 0, 0));
+	}
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
+		player->Translate(glm::vec3(0, 0, -f));
+		bool revert = false;
+		for (int i = 1; i < scena.size(); ++i)
+			if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
+			{
+				revert = true;
+				break;
+			}
+		if (revert)
+			player->Translate(glm::vec3(0, 0, f));
+	}
+	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+	{
+		player->Translate(glm::vec3(0, f, 0));
+		bool revert = false;
+		for (int i = 1; i < 10; ++i)
+			if (player->GetCollider()->Intersects(*scena[i]->GetCollider()))
+			{
+				revert = true;
+				break;
+			}
+		if (revert)
+			player->Translate(glm::vec3(0, -f, 0));
+	}
+	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+	{
+		player->Translate(glm::vec3(0, -f, 0));
+		bool revert = false;
+		for (int i = 1; i < 10; ++i)
+			if (player->GetCollider()->Intersects(*scena[i]->GetCollider()))
+			{
+				revert = true;
+				break;
+			}
+		if (revert)
+			player->Translate(glm::vec3(0, f, 0));
+	}
 }
 
 #pragma endregion
@@ -273,40 +406,43 @@ void draw()
 {
 #pragma region Light&Camera Settings
 
-	//program
-	dulapuri[0]->GetShader()->setVec3("viewPos", mainCamera->position);
-	
-	//light
-	dulapuri[0]->GetShader()->setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
-	dulapuri[0]->GetShader()->setVec3("light.diffuse", 0.7f, 0.7f, 0.7f);
-	dulapuri[0]->GetShader()->setVec3("light.specular", 1.0f, 1.0f, 1.0f);
-	dulapuri[0]->GetShader()->setVec3("light.direction", -0.2f, -1.0f, 10.0f);
-	if (night)
+	for (int i = 0; i < scena.size(); ++i)
 	{
-		dulapuri[0]->GetShader()->setVec3("light.position", lightPos);
-		dulapuri[0]->GetShader()->setFloat("light.constant", 1.0f);
-		dulapuri[0]->GetShader()->setFloat("light.linear", 0.09f);
-		dulapuri[0]->GetShader()->setFloat("light.quadratic", 0.032f);
+		//program
+		scena[i]->GetShader()->setVec3("viewPos", mainCamera->position);
 
-		dulapuri[0]->GetShader()->setVec3("light.position", mainCamera->position);
-		dulapuri[0]->GetShader()->setVec3("light.direction", mainCamera->front);
-		dulapuri[0]->GetShader()->setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
-		dulapuri[0]->GetShader()->setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
-	}	
-	glm::mat4 view = mainCamera->GetViewMatrix();
-	glm::mat4 projection;
-	projection = glm::perspective(glm::radians(mainCamera->zoom), screenWidth / screenHeight, 0.1f, 100.0f);
+		//light
+		scena[i]->GetShader()->setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+		scena[i]->GetShader()->setVec3("light.diffuse", 0.7f, 0.7f, 0.7f);
+		scena[i]->GetShader()->setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+		scena[i]->GetShader()->setVec3("light.direction", -0.2f, -1.0f, 10.0f);
+		if (night)
+		{
+			scena[i]->GetShader()->setVec3("light.position", lightPos);
+			scena[i]->GetShader()->setFloat("light.constant", 1.0f);
+			scena[i]->GetShader()->setFloat("light.linear", 0.09f);
+			scena[i]->GetShader()->setFloat("light.quadratic", 0.032f);
 
-	//set uniform variables
-	int viewLoc = glGetUniformLocation(dulapuri[0]->GetShader()->id, "view");
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	int projectionLoc = glGetUniformLocation(dulapuri[0]->GetShader()->id, "projection");
-	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+			scena[i]->GetShader()->setVec3("light.position", mainCamera->position);
+			scena[i]->GetShader()->setVec3("light.direction", mainCamera->front);
+			scena[i]->GetShader()->setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
+			scena[i]->GetShader()->setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
+		}
+		glm::mat4 view = mainCamera->GetViewMatrix();
+		glm::mat4 projection;
+		projection = glm::perspective(glm::radians(mainCamera->zoom), screenWidth / screenHeight, 0.1f, 100.0f);
+
+		//set uniform variables
+		int viewLoc = glGetUniformLocation(scena[i]->GetShader()->id, "view");
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		int projectionLoc = glGetUniformLocation(scena[i]->GetShader()->id, "projection");
+		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+	}
 #pragma endregion
 
 #pragma region Objects Setup
-	for (int i = 0; i < 10; ++i)
-		dulapuri[i]->Draw();
+	for (int i = 0; i < scena.size(); ++i)
+		scena[i]->Draw();
 #pragma endregion
 }
 
@@ -320,7 +456,7 @@ void deleteAll()
 	delete flashShader;
 	delete raycastShader;
 	delete mainCamera;
-	dulapuri.clear();
+	scena.clear();
 }
 #pragma endregion
 
