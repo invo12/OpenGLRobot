@@ -56,6 +56,7 @@ Camera* mainCamera;
 Shader* directionalShader, * flashShader, *raycastShader;
 Object* player;
 vector<Object*> scena;
+float playerSpeed = 0.01f;
 #pragma endregion
 
 #pragma region Utilitare
@@ -69,6 +70,19 @@ void changeAllShaders(Shader* shader)
 void emmitRay(int x, int y)
 {
 	cout << x <<' '<< y<<endl;
+}
+void moveAndCheckCollision(glm::vec3 delta)
+{
+	player->Translate(delta);
+	bool revert = false;
+	for (int i = 0; i < scena.size(); ++i)
+		if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
+		{
+			revert = true;
+			break;
+		}
+	if (revert)
+		player->Translate(-delta);
 }
 #pragma endregion
 
@@ -126,27 +140,28 @@ void initStaticObjects()
 	}
 	scena.push_back(new Object("Assets/cabinet", (night ? flashShader : directionalShader)));
 	scena[scena.size() - 1]->SetScale(glm::vec3(0.06f, 0.06f, 0.06f));
-	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 180, 0));
+	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 0, 0));
 	scena[scena.size() - 1]->SetPosition(glm::vec3(0, 0, 0));
 
 	scena.push_back(new Object("Assets/cargo", (night ? flashShader : directionalShader)));
 	scena[scena.size() - 1]->SetScale(glm::vec3(0.0015f, 0.0015f, 0.0015f));
-	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 35, 0));
+	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 0, 0));
 	scena[scena.size() - 1]->SetPosition(glm::vec3(2.3f, 0, 0.3f));
 
 	scena.push_back(new Object("Assets/cargo", (night ? flashShader : directionalShader)));
 	scena[scena.size() - 1]->SetScale(glm::vec3(0.0015f, 0.0015f, 0.0015f));
-	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 130, 0));
-	scena[scena.size() - 1]->SetPosition(glm::vec3(1.3f, 0, 0.7f));
+	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 0, 0));
+	scena[scena.size() - 1]->SetPosition(glm::vec3(1.3f, 1.0f, 0.7f));
 	player = scena[scena.size() - 1];
+
 	scena.push_back(new Object("Assets/WoodenCrate", (night ? flashShader : directionalShader)));
 	scena[scena.size() - 1]->SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
-	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 10, 0));
+	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 0, 0));
 	scena[scena.size() - 1]->SetPosition(glm::vec3(0.2, 0, 2.7f));
 
 	scena.push_back(new Object("Assets/roaba", (night ? flashShader : directionalShader)));
 	scena[scena.size() - 1]->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
-	scena[scena.size() - 1]->SetRotation(glm::vec3(0, -40, 0));
+	scena[scena.size() - 1]->SetRotation(glm::vec3(0, -0, 0));
 	scena[scena.size() - 1]->SetPosition(glm::vec3(0.3f, 0, 1.7f));
 }
 
@@ -191,10 +206,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			changeAllShaders(directionalShader);
 		night = !night;
 	}
-	/*float f = 0.01f;
+	/*float playerSpeed = 0.01f;
 	if (key == GLFW_KEY_UP && action == GLFW_PRESS)
 	{
-		player->Translate(glm::vec3(0, 0, f));
+		player->Translate(glm::vec3(0, 0, playerSpeed));
 		bool revert = false;
 		for (int i = 1; i < scena.size(); ++i)
 			if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
@@ -203,11 +218,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 				break;
 			}
 		if(revert)
-			player->Translate(glm::vec3(0, 0, -f));
+			player->Translate(glm::vec3(0, 0, -playerSpeed));
 	}
 	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
 	{
-		player->Translate(glm::vec3(f, 0, 0));
+		player->Translate(glm::vec3(playerSpeed, 0, 0));
 		bool revert = false;
 		for (int i = 1; i < scena.size(); ++i)
 			if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
@@ -216,11 +231,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 				break;
 			}
 		if (revert)
-			player->Translate(glm::vec3(-f, 0, 0));
+			player->Translate(glm::vec3(-playerSpeed, 0, 0));
 	}
 	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
 	{
-		player->Translate(glm::vec3(-f, 0, 0));
+		player->Translate(glm::vec3(-playerSpeed, 0, 0));
 		bool revert = false;
 		for (int i = 1; i < scena.size(); ++i)
 			if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
@@ -229,11 +244,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 				break;
 			}
 		if (revert)
-			player->Translate(glm::vec3(f, 0, 0));
+			player->Translate(glm::vec3(playerSpeed, 0, 0));
 	}
 	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
 	{
-		player->Translate(glm::vec3(0, 0, -f));
+		player->Translate(glm::vec3(0, 0, -playerSpeed));
 		bool revert = false;
 		for (int i = 1; i < scena.size(); ++i)
 			if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
@@ -242,11 +257,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 				break;
 			}
 		if (revert)
-			player->Translate(glm::vec3(0, 0, f));
+			player->Translate(glm::vec3(0, 0, playerSpeed));
 	}
 	if (key == GLFW_KEY_Z && action == GLFW_PRESS)
 	{
-		player->Translate(glm::vec3(0, f, 0));
+		player->Translate(glm::vec3(0, playerSpeed, 0));
 		bool revert = false;
 		for (int i = 1; i < 10; ++i)
 			if (player->GetCollider()->Intersects(*scena[i]->GetCollider()))
@@ -255,11 +270,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 				break;
 			}
 		if (revert)
-			player->Translate(glm::vec3(0, -f, 0));
+			player->Translate(glm::vec3(0, -playerSpeed, 0));
 	}
 	if (key == GLFW_KEY_X && action == GLFW_PRESS)
 	{
-		player->Translate(glm::vec3(0, -f, 0));
+		player->Translate(glm::vec3(0, -playerSpeed, 0));
 		bool revert = false;
 		for (int i = 1; i < 10; ++i)
 			if (player->GetCollider()->Intersects(*scena[i]->GetCollider()))
@@ -268,7 +283,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 				break;
 			}
 		if (revert)
-			player->Translate(glm::vec3(0, f, 0));
+			player->Translate(glm::vec3(0, playerSpeed, 0));
 	}*/
 }
 
@@ -317,91 +332,40 @@ void processInput(GLFWwindow* window)
 		glfwGetCursorPos(window, &x, &y);
 		emmitRay(x, y);
 	}
-	float f = 0.01f;
+
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 	{
-		player->Translate(glm::vec3(0, 0, f));
-		bool revert = false;
-		for (int i = 1; i < scena.size(); ++i)
-			if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
-			{
-				revert = true;
-				break;
-			}
-		if (revert)
-			player->Translate(glm::vec3(0, 0, -f));
+		moveAndCheckCollision(glm::vec3(0, 0, playerSpeed));
 	}
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 	{
-		player->Translate(glm::vec3(f, 0, 0));
-		bool revert = false;
-		for (int i = 1; i < scena.size(); ++i)
-			if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
-			{
-				revert = true;
-				break;
-			}
-		if (revert)
-			player->Translate(glm::vec3(-f, 0, 0));
+		moveAndCheckCollision(glm::vec3(-playerSpeed, 0, 0));
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
 	{
-		player->Translate(glm::vec3(-f, 0, 0));
-		bool revert = false;
-		for (int i = 1; i < scena.size(); ++i)
-			if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
-			{
-				revert = true;
-				break;
-			}
-		if (revert)
-			player->Translate(glm::vec3(f, 0, 0));
+		moveAndCheckCollision(glm::vec3(playerSpeed, 0, 0));
 	}
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 	{
-		player->Translate(glm::vec3(0, 0, -f));
-		bool revert = false;
-		for (int i = 1; i < scena.size(); ++i)
-			if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
-			{
-				revert = true;
-				break;
-			}
-		if (revert)
-			player->Translate(glm::vec3(0, 0, f));
+		moveAndCheckCollision(glm::vec3(0, 0, -playerSpeed));
 	}
 	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
 	{
-		player->Translate(glm::vec3(0, f, 0));
-		bool revert = false;
-		for (int i = 1; i < 10; ++i)
-			if (player->GetCollider()->Intersects(*scena[i]->GetCollider()))
-			{
-				revert = true;
-				break;
-			}
-		if (revert)
-			player->Translate(glm::vec3(0, -f, 0));
+		moveAndCheckCollision(glm::vec3(0, playerSpeed, 0));
 	}
 	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
 	{
-		player->Translate(glm::vec3(0, -f, 0));
-		bool revert = false;
-		for (int i = 1; i < 10; ++i)
-			if (player->GetCollider()->Intersects(*scena[i]->GetCollider()))
-			{
-				revert = true;
-				break;
-			}
-		if (revert)
-			player->Translate(glm::vec3(0, f, 0));
+		moveAndCheckCollision(glm::vec3(0, -playerSpeed, 0));
 	}
 }
 
 #pragma endregion
 
 #pragma region Desenare
-
+void update() 
+{
+	moveAndCheckCollision(glm::vec3(0, -playerSpeed, 0));
+}
 void draw()
 {
 #pragma region Light&Camera Settings
@@ -498,6 +462,7 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glEnable(GL_DEPTH_TEST);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		update();
 		draw();
 
 		//call events and swap buffers
