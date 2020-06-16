@@ -22,7 +22,10 @@ enum class Axis {
 	y,
 	z
 };
-
+enum class Layer {
+	Default,
+	IgnoreRaycast
+};
 class Object
 {
 private:
@@ -54,6 +57,9 @@ private:
 	//initialize VAO, VBO, EBO
 	void initBuffers();
 	void calcModel();
+
+	Layer layer;
+	bool active;
 public:
 	Object(std::string numeFisier, Shader* shader, glm::vec3 position = glm::vec3(0), glm::vec3 rotation = glm::vec3(0), glm::vec3 scale = glm::vec3(1));
 	~Object();
@@ -66,6 +72,11 @@ public:
 	Shader* GetShader();
 
 	BoxCollider* GetCollider();
+	void SetLayer(Layer l);
+	Layer GetLayer();
+
+	void SetActive(bool active);
+	bool IsActive();
 	//reset position, rotation and scale
 	void Reset();
 	glm::mat4 GetModelMatrix();

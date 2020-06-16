@@ -55,6 +55,7 @@ void Object::initBuffers()
 
 Object::Object(std::string numeFisier, Shader* shader, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
 {
+	active = true;
 	//set name
 	name = numeFisier;
 	
@@ -67,6 +68,7 @@ Object::Object(std::string numeFisier, Shader* shader, glm::vec3 position, glm::
 
 	//initialize box collider ONLY AFTER VERTEX BUFFER
 	this->collider = new BoxCollider(ObjectLoader::GetColliderMin(name), ObjectLoader::GetColliderMax(name));
+	this->layer = Layer::Default;
 
 	//initialize VAO, VBO, EBO
 	initBuffers();
@@ -102,6 +104,16 @@ Object::Object(std::string numeFisier, Shader* shader, glm::vec3 position, glm::
 void Object::SetVAO(int VAO)
 {
 	this->VAO = VAO;
+}
+
+void Object::SetActive(bool active)
+{
+	this->active = active;
+}
+
+bool Object::IsActive()
+{
+	return this->active;
 }
 
 void Object::Reset()
@@ -224,6 +236,16 @@ BoxCollider* Object::GetCollider()
 	return collider;
 }
 
+void Object::SetLayer(Layer l)
+{
+	this->layer = l;
+}
+
+Layer Object::GetLayer()
+{
+	return layer;
+}
+
 void Object::Draw()
 {
 	//folosire shader
@@ -241,10 +263,9 @@ void Object::Draw()
 	glBindTexture(GL_TEXTURE_2D, textureInfo.normalTexID);
 	shader->setInt("normalMap", 2);
 	shader->setFloat("material.shininess", material.specularExponent);
-	
-	shader->setMat4("model", model);
 	shader->setMat3("normalMatrix", normal);
 	
+	shader->setMat4("model", model);
 
 	//bind la VAO
 	glBindVertexArray(VAO);

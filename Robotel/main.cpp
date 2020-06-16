@@ -15,6 +15,7 @@
 #include "Camera.h"
 #include "TextureManager.h"
 #include "Object.h"
+#include "Raycast.h"
 
 using namespace std;
 #pragma region Declaratii
@@ -72,10 +73,6 @@ void changeAllShaders(Shader* shader)
 		scena[i]->SetShader(shader);
 	}
 }
-void emmitRay(int x, int y)
-{
-	cout << x <<' '<< y<<endl;
-}
 //returned if you can move
 void moveAndCheckCollision(glm::vec3 delta)
 {
@@ -99,7 +96,7 @@ void initShaders()
 {
 	directionalShader = new Shader("./Shaders/vertex/lightVertex.vert", "./Shaders/fragment/directionalLight.frag");
 	flashShader = new Shader("./Shaders/vertex/lightVertex.vert", "./Shaders/fragment/flashLight.frag");
-	raycastShader = new Shader("./Shaders/vertex/lightVertex.vert", "./Shaders/fragment/raycast.frag");
+	raycastShader = new Shader("./Shaders/vertex/raycast.vert", "./Shaders/fragment/raycast.frag");
 }
 
 void initStaticObjects()
@@ -160,6 +157,7 @@ void initStaticObjects()
 	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 0, 0));
 	scena[scena.size() - 1]->SetPosition(glm::vec3(1.3f, 2.0f, 0.7f));
 	player = scena[scena.size() - 1];
+	player->SetLayer(Layer::IgnoreRaycast);
 
 	scena.push_back(new Object("Assets/WoodenCrate", (night ? flashShader : directionalShader)));
 	scena[scena.size() - 1]->SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
@@ -214,7 +212,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 	if (key == GLFW_KEY_L && action == GLFW_PRESS)
 	{
-		
 		if (!night)
 			changeAllShaders(flashShader);
 		else
@@ -224,6 +221,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_C && action == GLFW_PRESS)
 	{
 		currentCamera = (currentCamera + 1) % 3;
+	}
+	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+	{
+		Object* hit = Raycast::castRay(player->GetPosition(), glm::vec3(0, 0, 1), 5, &scena);
+		if (hit != nullptr)
+		{
+			hit->SetActive(false);
+		}
 	}
 }
 
@@ -259,14 +264,6 @@ void processInput(GLFWwindow* window)
 	//if the user presses ESC then close the app
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-	
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1))
-	{
-		double  x, y;
-		glfwGetCursorPos(window, &x, &y);
-		emmitRay(x, y);
-	}
-
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 	{
 		moveAndCheckCollision(glm::vec3(0, 0, 1));
@@ -305,7 +302,6 @@ void processInput(GLFWwindow* window)
 			cameras[currentCamera]->ProcessKeyboard(RIGHT, deltaTime);
 	}
 }
-
 #pragma endregion
 
 #pragma region Desenare&Update
@@ -324,41 +320,45 @@ void draw()
 
 	for (int i = 0; i < scena.size(); ++i)
 	{
-		//program
-		scena[i]->GetShader()->setVec3("viewPos", cameras[currentCamera]->position);
-
-		//light
-		scena[i]->GetShader()->setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
-		scena[i]->GetShader()->setVec3("light.diffuse", 0.7f, 0.7f, 0.7f);
-		scena[i]->GetShader()->setVec3("light.specular", 1.0f, 1.0f, 1.0f);
-		scena[i]->GetShader()->setVec3("light.direction", -0.2f, -1.0f, 10.0f);
-		if (night)
+		if (scena[i]->IsActive())
 		{
-			scena[i]->GetShader()->setVec3("light.position", lightPos);
-			scena[i]->GetShader()->setFloat("light.constant", 1.0f);
-			scena[i]->GetShader()->setFloat("light.linear", 0.09f);
-			scena[i]->GetShader()->setFloat("light.quadratic", 0.032f);
+			//program
+			scena[i]->GetShader()->setVec3("viewPos", cameras[currentCamera]->position);
 
-			scena[i]->GetShader()->setVec3("light.position", cameras[currentCamera]->position);
-			scena[i]->GetShader()->setVec3("light.direction", cameras[currentCamera]->front);
-			scena[i]->GetShader()->setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
-			scena[i]->GetShader()->setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
+			//light
+			scena[i]->GetShader()->setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+			scena[i]->GetShader()->setVec3("light.diffuse", 0.7f, 0.7f, 0.7f);
+			scena[i]->GetShader()->setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+			scena[i]->GetShader()->setVec3("light.direction", -0.2f, -1.0f, 10.0f);
+			if (night)
+			{
+				scena[i]->GetShader()->setVec3("light.position", lightPos);
+				scena[i]->GetShader()->setFloat("light.constant", 1.0f);
+				scena[i]->GetShader()->setFloat("light.linear", 0.09f);
+				scena[i]->GetShader()->setFloat("light.quadratic", 0.032f);
+
+				scena[i]->GetShader()->setVec3("light.position", cameras[currentCamera]->position);
+				scena[i]->GetShader()->setVec3("light.direction", cameras[currentCamera]->front);
+				scena[i]->GetShader()->setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
+				scena[i]->GetShader()->setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
+			}
+			glm::mat4 view = cameras[currentCamera]->GetViewMatrix();
+			glm::mat4 projection;
+			projection = glm::perspective(glm::radians(cameras[currentCamera]->zoom), screenWidth / screenHeight, 0.1f, 100.0f);
+
+			//set uniform variables
+			int viewLoc = glGetUniformLocation(scena[i]->GetShader()->id, "view");
+			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+			int projectionLoc = glGetUniformLocation(scena[i]->GetShader()->id, "projection");
+			glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 		}
-		glm::mat4 view = cameras[currentCamera]->GetViewMatrix();
-		glm::mat4 projection;
-		projection = glm::perspective(glm::radians(cameras[currentCamera]->zoom), screenWidth / screenHeight, 0.1f, 100.0f);
-
-		//set uniform variables
-		int viewLoc = glGetUniformLocation(scena[i]->GetShader()->id, "view");
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		int projectionLoc = glGetUniformLocation(scena[i]->GetShader()->id, "projection");
-		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 	}
 #pragma endregion
 
 #pragma region Objects Setup
 	for (int i = 0; i < scena.size(); ++i)
-		scena[i]->Draw();
+		if (scena[i]->IsActive())
+			scena[i]->Draw();
 #pragma endregion
 }
 

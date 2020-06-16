@@ -27,8 +27,9 @@ bool BoxCollider::Intersects(BoxCollider collider)
 
 bool BoxCollider::Intersects(glm::vec3 point1, glm::vec3 point2)
 {
-	return true;
-	//TODO
+	return isOverlapping1D(point1.x, point2.x, min.x, max.x) &&
+		isOverlapping1D(point1.y, point2.y, min.y, max.y) &&
+		isOverlapping1D(point1.z, point2.z, min.z, max.z);
 }
 
 void BoxCollider::SetBounds(std::vector<glm::vec3> corners)

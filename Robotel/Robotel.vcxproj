@@ -136,6 +136,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectLoader.cpp" />
+    <ClCompile Include="Raycast.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="STB.cpp" />
     <ClCompile Include="TextureManager.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="FirstPersonCamera.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectLoader.h" />
+    <ClInclude Include="Raycast.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="TextureManager.h" />

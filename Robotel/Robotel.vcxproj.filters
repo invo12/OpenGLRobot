@@ -51,6 +51,9 @@
     <ClCompile Include="ThirdPersonCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Raycast.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="triunghi.txt">
@@ -89,6 +92,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ThirdPersonCamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Raycast.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
