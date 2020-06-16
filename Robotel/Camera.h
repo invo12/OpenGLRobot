@@ -49,5 +49,6 @@ public:
 	void SetPosition(glm::vec3 position);
 protected:
 	virtual void updateCameraVectors();
+	glm::vec3 initialOffset;
 };
 

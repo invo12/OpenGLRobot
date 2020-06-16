@@ -54,11 +54,9 @@ bool grass = true;
 float angle = 0;
 bool night = false;
 
-glm::vec3 cameraOffset(0, 1,0);
-
 int currentCamera = 0;
+glm::vec3 cameraOffsets[3];
 Camera* cameras[3];
-Camera* mainCamera, *firstPersonCamera, *thirdPersonCamera, *freeLookCamera;
 
 Shader* directionalShader, * flashShader, *raycastShader;
 Object* player;
@@ -79,7 +77,7 @@ void emmitRay(int x, int y)
 	cout << x <<' '<< y<<endl;
 }
 //returned if you can move
-bool moveAndCheckCollision(glm::vec3 delta)
+void moveAndCheckCollision(glm::vec3 delta)
 {
 	delta = delta * glm::vec3(playerSpeed * deltaTime);
 	player->Translate(delta);
@@ -92,7 +90,6 @@ bool moveAndCheckCollision(glm::vec3 delta)
 		}
 	if (revert)
 		player->Translate(-delta);
-	return !revert;
 }
 #pragma endregion
 
@@ -179,15 +176,15 @@ void initAll()
 {
 	initShaders();
 	initStaticObjects();
-	freeLookCamera = new Camera(glm::vec3(0,2,3));
-	firstPersonCamera = new FirstPersonCamera(player->GetPosition() - glm::vec3(0,0,2));
-	thirdPersonCamera = new ThirdPersonCamera(player->GetPosition(),cameraOffset);
 
-	cameras[0] = thirdPersonCamera;
-	cameras[1] = firstPersonCamera;
-	cameras[2] = freeLookCamera;
+	cameraOffsets[0] = glm::vec3(0, 1, 0);
+	cameraOffsets[1] = glm::vec3(0, 0.2f, 1.25f);
+	cameraOffsets[2] = glm::vec3(0, 1, 0);
+	cameras[0] = new ThirdPersonCamera(player->GetPosition(), cameraOffsets[0]);
+	cameras[1] = new FirstPersonCamera(player->GetPosition(), cameraOffsets[1]);
+	cameras[2] = new Camera(glm::vec3(0, 2, 3));
 
-	mainCamera = thirdPersonCamera;
+	cameras[currentCamera]->ProcessMouseMovement(0, 0, cameraOffsets[currentCamera]);
 }
 #pragma endregion
 
@@ -226,7 +223,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 	if (key == GLFW_KEY_C && action == GLFW_PRESS)
 	{
-		mainCamera = cameras[(++currentCamera) % 3];
+		currentCamera = (currentCamera + 1) % 3;
 	}
 }
 
@@ -243,12 +240,12 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos)
 	lastX = xPos;
 	lastY = yPos;
 
-	mainCamera->ProcessMouseMovement(xOffset, yOffset, cameraOffset);
+	cameras[currentCamera]->ProcessMouseMovement(xOffset, yOffset, cameraOffsets[currentCamera]);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	mainCamera->ProcessMouseScroll(yoffset);
+	cameras[currentCamera]->ProcessMouseScroll(yoffset);
 }
 
 void processInput(GLFWwindow* window)
@@ -259,8 +256,6 @@ void processInput(GLFWwindow* window)
 		deltaTime = 0.01f;
 	lastFrame = currentFrame;
 
-	float cameraSpeed = 2.5f * deltaTime;
-	bool canMove = true;
 	//if the user presses ESC then close the app
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
@@ -274,54 +269,52 @@ void processInput(GLFWwindow* window)
 
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 	{
-		canMove = moveAndCheckCollision(glm::vec3(0, 0, 1));
+		moveAndCheckCollision(glm::vec3(0, 0, 1));
 	}
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 	{
-		canMove = moveAndCheckCollision(glm::vec3(0, 0, -1));
+		moveAndCheckCollision(glm::vec3(0, 0, -1));
 	}
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 	{
-		canMove = moveAndCheckCollision(glm::vec3(-1, 0, 0));
-
+		moveAndCheckCollision(glm::vec3(-1, 0, 0));
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
 	{
-		canMove = moveAndCheckCollision(glm::vec3(1, 0, 0));
-
+		moveAndCheckCollision(glm::vec3(1, 0, 0));
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
 	{
-		canMove = moveAndCheckCollision(glm::vec3(0, 1, 0));
+		moveAndCheckCollision(glm::vec3(0, 1, 0));
 	}
 	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
 	{
-		canMove = moveAndCheckCollision(glm::vec3(0, -1, 0));
+		moveAndCheckCollision(glm::vec3(0, -1, 0));
 	}
 	//camera calculations after moving the player
-	if (mainCamera == freeLookCamera)
+	if (currentCamera == 2)
 	{
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-			mainCamera->ProcessKeyboard(FORWARD, deltaTime);
+			cameras[currentCamera]->ProcessKeyboard(FORWARD, deltaTime);
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			mainCamera->ProcessKeyboard(BACKWARD, deltaTime);
+			cameras[currentCamera]->ProcessKeyboard(BACKWARD, deltaTime);
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-			mainCamera->ProcessKeyboard(LEFT, deltaTime);
+			cameras[currentCamera]->ProcessKeyboard(LEFT, deltaTime);
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-			mainCamera->ProcessKeyboard(RIGHT, deltaTime);
+			cameras[currentCamera]->ProcessKeyboard(RIGHT, deltaTime);
 	}
 }
 
 #pragma endregion
 
-#pragma region Desenare
+#pragma region Desenare&Update
 void update() 
 {
-	bool canMove = moveAndCheckCollision(glm::vec3(0, -1, 0));
-	if (mainCamera != freeLookCamera)
+	moveAndCheckCollision(glm::vec3(0, -1, 0));
+	if (currentCamera != 2)
 	{
-		mainCamera->SetPosition(player->GetPosition() + cameraOffset);
+		cameras[currentCamera]->SetPosition(player->GetPosition() + cameraOffsets[currentCamera]);
 	}
 
 }
@@ -332,7 +325,7 @@ void draw()
 	for (int i = 0; i < scena.size(); ++i)
 	{
 		//program
-		scena[i]->GetShader()->setVec3("viewPos", mainCamera->position);
+		scena[i]->GetShader()->setVec3("viewPos", cameras[currentCamera]->position);
 
 		//light
 		scena[i]->GetShader()->setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
@@ -346,14 +339,14 @@ void draw()
 			scena[i]->GetShader()->setFloat("light.linear", 0.09f);
 			scena[i]->GetShader()->setFloat("light.quadratic", 0.032f);
 
-			scena[i]->GetShader()->setVec3("light.position", mainCamera->position);
-			scena[i]->GetShader()->setVec3("light.direction", mainCamera->front);
+			scena[i]->GetShader()->setVec3("light.position", cameras[currentCamera]->position);
+			scena[i]->GetShader()->setVec3("light.direction", cameras[currentCamera]->front);
 			scena[i]->GetShader()->setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
 			scena[i]->GetShader()->setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
 		}
-		glm::mat4 view = mainCamera->GetViewMatrix();
+		glm::mat4 view = cameras[currentCamera]->GetViewMatrix();
 		glm::mat4 projection;
-		projection = glm::perspective(glm::radians(mainCamera->zoom), screenWidth / screenHeight, 0.1f, 100.0f);
+		projection = glm::perspective(glm::radians(cameras[currentCamera]->zoom), screenWidth / screenHeight, 0.1f, 100.0f);
 
 		//set uniform variables
 		int viewLoc = glGetUniformLocation(scena[i]->GetShader()->id, "view");
@@ -378,9 +371,8 @@ void deleteAll()
 	delete directionalShader;
 	delete flashShader;
 	delete raycastShader;
-	delete freeLookCamera;
-	delete firstPersonCamera;
-	delete thirdPersonCamera;
+	for (int i = 0; i < 3; ++i)
+		delete cameras[i];
 	scena.clear();
 }
 #pragma endregion
