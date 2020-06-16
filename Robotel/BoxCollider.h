@@ -12,6 +12,7 @@ private:
 public:
 	BoxCollider(glm::vec3 min, glm::vec3 max);
 	bool Intersects(BoxCollider collider);
+	bool Intersects(glm::vec3 point1, glm::vec3 point2);
 	void SetBounds(std::vector<glm::vec3> corners);
 	glm::vec3 GetMin();
 	glm::vec3 GetMax();

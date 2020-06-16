@@ -25,6 +25,12 @@ bool BoxCollider::Intersects(BoxCollider collider)
 		isOverlapping1D(collider.GetMin().z, collider.GetMax().z, this->min.z, this->max.z);
 }
 
+bool BoxCollider::Intersects(glm::vec3 point1, glm::vec3 point2)
+{
+	return true;
+	//TODO
+}
+
 void BoxCollider::SetBounds(std::vector<glm::vec3> corners)
 {
 	glm::vec3 mini = corners[0];

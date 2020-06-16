@@ -10,6 +10,8 @@
 
 #include "stb_image.h"
 #include "Shader.h"
+#include "FirstPersonCamera.h"
+#include "ThirdPersonCamera.h"
 #include "Camera.h"
 #include "TextureManager.h"
 #include "Object.h"
@@ -52,11 +54,13 @@ bool grass = true;
 float angle = 0;
 bool night = false;
 
-Camera* mainCamera;
+glm::vec3 cameraOffset(0, 1, -1);
+
+Camera* mainCamera, *firstPersonCamera, *thirdPersonCamera, *freeLookCamera;
 Shader* directionalShader, * flashShader, *raycastShader;
 Object* player;
 vector<Object*> scena;
-float playerSpeed = 0.01f;
+float playerSpeed = 1.0f;
 #pragma endregion
 
 #pragma region Utilitare
@@ -71,8 +75,10 @@ void emmitRay(int x, int y)
 {
 	cout << x <<' '<< y<<endl;
 }
-void moveAndCheckCollision(glm::vec3 delta)
+//returned if you can move
+bool moveAndCheckCollision(glm::vec3 delta)
 {
+	delta = delta * glm::vec3(playerSpeed * deltaTime);
 	player->Translate(delta);
 	bool revert = false;
 	for (int i = 0; i < scena.size(); ++i)
@@ -83,6 +89,7 @@ void moveAndCheckCollision(glm::vec3 delta)
 		}
 	if (revert)
 		player->Translate(-delta);
+	return !revert;
 }
 #pragma endregion
 
@@ -151,7 +158,7 @@ void initStaticObjects()
 	scena.push_back(new Object("Assets/cargo", (night ? flashShader : directionalShader)));
 	scena[scena.size() - 1]->SetScale(glm::vec3(0.0015f, 0.0015f, 0.0015f));
 	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 0, 0));
-	scena[scena.size() - 1]->SetPosition(glm::vec3(1.3f, 1.0f, 0.7f));
+	scena[scena.size() - 1]->SetPosition(glm::vec3(1.3f, 2.0f, 0.7f));
 	player = scena[scena.size() - 1];
 
 	scena.push_back(new Object("Assets/WoodenCrate", (night ? flashShader : directionalShader)));
@@ -169,7 +176,11 @@ void initAll()
 {
 	initShaders();
 	initStaticObjects();
-	mainCamera = new Camera();
+	freeLookCamera = new Camera(glm::vec3(0,2,3));
+	firstPersonCamera = new FirstPersonCamera(player->GetPosition() - glm::vec3(0,0,2));
+	thirdPersonCamera = new ThirdPersonCamera(player->GetPosition() + glm::vec3(0, 1, 0.5f));
+
+	mainCamera = thirdPersonCamera;
 }
 #pragma endregion
 
@@ -206,85 +217,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			changeAllShaders(directionalShader);
 		night = !night;
 	}
-	/*float playerSpeed = 0.01f;
-	if (key == GLFW_KEY_UP && action == GLFW_PRESS)
-	{
-		player->Translate(glm::vec3(0, 0, playerSpeed));
-		bool revert = false;
-		for (int i = 1; i < scena.size(); ++i)
-			if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
-			{
-				revert = true;
-				break;
-			}
-		if(revert)
-			player->Translate(glm::vec3(0, 0, -playerSpeed));
-	}
-	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
-	{
-		player->Translate(glm::vec3(playerSpeed, 0, 0));
-		bool revert = false;
-		for (int i = 1; i < scena.size(); ++i)
-			if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
-			{
-				revert = true;
-				break;
-			}
-		if (revert)
-			player->Translate(glm::vec3(-playerSpeed, 0, 0));
-	}
-	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
-	{
-		player->Translate(glm::vec3(-playerSpeed, 0, 0));
-		bool revert = false;
-		for (int i = 1; i < scena.size(); ++i)
-			if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
-			{
-				revert = true;
-				break;
-			}
-		if (revert)
-			player->Translate(glm::vec3(playerSpeed, 0, 0));
-	}
-	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
-	{
-		player->Translate(glm::vec3(0, 0, -playerSpeed));
-		bool revert = false;
-		for (int i = 1; i < scena.size(); ++i)
-			if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
-			{
-				revert = true;
-				break;
-			}
-		if (revert)
-			player->Translate(glm::vec3(0, 0, playerSpeed));
-	}
-	if (key == GLFW_KEY_Z && action == GLFW_PRESS)
-	{
-		player->Translate(glm::vec3(0, playerSpeed, 0));
-		bool revert = false;
-		for (int i = 1; i < 10; ++i)
-			if (player->GetCollider()->Intersects(*scena[i]->GetCollider()))
-			{
-				revert = true;
-				break;
-			}
-		if (revert)
-			player->Translate(glm::vec3(0, -playerSpeed, 0));
-	}
-	if (key == GLFW_KEY_X && action == GLFW_PRESS)
-	{
-		player->Translate(glm::vec3(0, -playerSpeed, 0));
-		bool revert = false;
-		for (int i = 1; i < 10; ++i)
-			if (player->GetCollider()->Intersects(*scena[i]->GetCollider()))
-			{
-				revert = true;
-				break;
-			}
-		if (revert)
-			player->Translate(glm::vec3(0, playerSpeed, 0));
-	}*/
 }
 
 void mouse_callback(GLFWwindow* window, double xPos, double yPos)
@@ -312,20 +244,16 @@ void processInput(GLFWwindow* window)
 {
 	float currentFrame = glfwGetTime();
 	deltaTime = currentFrame - lastFrame;
+	if (deltaTime > 1)
+		deltaTime = 0.01f;
 	lastFrame = currentFrame;
 
 	float cameraSpeed = 2.5f * deltaTime;
+	bool canMove = true;
 	//if the user presses ESC then close the app
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		mainCamera->ProcessKeyboard(FORWARD, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		mainCamera->ProcessKeyboard(BACKWARD, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		mainCamera->ProcessKeyboard(LEFT, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		mainCamera->ProcessKeyboard(RIGHT, deltaTime);
+	
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1))
 	{
 		double  x, y;
@@ -335,27 +263,42 @@ void processInput(GLFWwindow* window)
 
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 	{
-		moveAndCheckCollision(glm::vec3(0, 0, playerSpeed));
-	}
-	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-	{
-		moveAndCheckCollision(glm::vec3(-playerSpeed, 0, 0));
-	}
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-	{
-		moveAndCheckCollision(glm::vec3(playerSpeed, 0, 0));
+		canMove = moveAndCheckCollision(glm::vec3(0, 0, 1));
 	}
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 	{
-		moveAndCheckCollision(glm::vec3(0, 0, -playerSpeed));
+		canMove = moveAndCheckCollision(glm::vec3(0, 0, -1));
 	}
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+	{
+		canMove = moveAndCheckCollision(glm::vec3(-1, 0, 0));
+
+	}
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+	{
+		canMove = moveAndCheckCollision(glm::vec3(1, 0, 0));
+
+	}
+
 	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
 	{
-		moveAndCheckCollision(glm::vec3(0, playerSpeed, 0));
+		canMove = moveAndCheckCollision(glm::vec3(0, 1, 0));
 	}
 	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
 	{
-		moveAndCheckCollision(glm::vec3(0, -playerSpeed, 0));
+		canMove = moveAndCheckCollision(glm::vec3(0, -1, 0));
+	}
+	//camera calculations after moving the player
+	if (mainCamera == freeLookCamera)
+	{
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+			mainCamera->ProcessKeyboard(FORWARD, deltaTime, canMove);
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+			mainCamera->ProcessKeyboard(BACKWARD, deltaTime, canMove);
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+			mainCamera->ProcessKeyboard(LEFT, deltaTime, canMove);
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+			mainCamera->ProcessKeyboard(RIGHT, deltaTime, canMove);
 	}
 }
 
@@ -364,7 +307,12 @@ void processInput(GLFWwindow* window)
 #pragma region Desenare
 void update() 
 {
-	moveAndCheckCollision(glm::vec3(0, -playerSpeed, 0));
+	bool canMove = moveAndCheckCollision(glm::vec3(0, -1, 0));
+	if (mainCamera != freeLookCamera)
+	{
+		mainCamera->SetPosition(player->GetPosition() + cameraOffset);
+	}
+
 }
 void draw()
 {
@@ -419,7 +367,9 @@ void deleteAll()
 	delete directionalShader;
 	delete flashShader;
 	delete raycastShader;
-	delete mainCamera;
+	delete freeLookCamera;
+	delete firstPersonCamera;
+	delete thirdPersonCamera;
 	scena.clear();
 }
 #pragma endregion

@@ -76,6 +76,8 @@ public:
 	void Translate(glm::vec3 translate);
 	void Rotate(float degAngle, Axis rotationAxis);
 	
+	glm::vec3 GetPosition();
+
 	//set object properties
 	void SetPosition(glm::vec3 position);
 	void SetRotation(glm::vec3 rotation);

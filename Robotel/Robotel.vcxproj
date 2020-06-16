@@ -132,12 +132,14 @@
     <ClCompile Include="BufferManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ColliderManager.cpp" />
+    <ClCompile Include="FirstPersonCamera.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectLoader.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="STB.cpp" />
     <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="ThirdPersonCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="triunghi.txt" />
@@ -147,11 +149,13 @@
     <ClInclude Include="BufferManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ColliderManager.h" />
+    <ClInclude Include="FirstPersonCamera.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectLoader.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="ThirdPersonCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\fragment\directionalLight.frag" />

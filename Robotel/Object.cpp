@@ -198,6 +198,11 @@ void Object::calcModel()
 }
 #pragma endregion
 
+glm::vec3 Object::GetPosition()
+{
+	return position;
+}
+
 string Object::GetName()
 {
 	return name;
