@@ -1,24 +1,28 @@
 #include "ThirdPersonCamera.h"
-
-ThirdPersonCamera::ThirdPersonCamera(glm::vec3 position, float yaw, float pitch, glm::vec3 up) : Camera(position,up, yaw, pitch)
+#include<iostream>
+using namespace std;
+ThirdPersonCamera::ThirdPersonCamera(glm::vec3 position,glm::vec3 initialOffset, float yaw, float pitch, glm::vec3 up) : Camera(position,up, yaw, pitch)
 {
+	this->initialOffset = initialOffset;
 }
 
-void ThirdPersonCamera::ProcessKeyboard(CameraMovement direction, float deltaTime, float canMove)
+void ThirdPersonCamera::ProcessMouseMovement(float xoffset, float yoffset, glm::vec3& cameraOffset, GLboolean constrainPitch)
 {
-	if (canMove)
-	{
-		Camera::ProcessKeyboard(direction, deltaTime);
-	}
+	xoffset *= mouseSensitivity;
+	yaw += xoffset;
+	//if (yaw > YAW3D + 45)
+	//	yaw = YAW3D + 45;
+	//else if (yaw < YAW3D -45)
+	//	yaw = YAW3D - 45;
+	cameraOffset = initialOffset + glm::vec3(-cos(glm::radians(yaw)), 0, -sin(glm::radians(yaw)));
+	updateCameraVectors();
 }
 
-void ThirdPersonCamera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
-{
-}
-
-void ThirdPersonCamera::updateCameraVectors()
-{
-	front = glm::vec3(0, 0, 1);
-	right = glm::vec3(-1, 0, 0);
-	up = glm::normalize(glm::cross(right, front));
-}
+//void ThirdPersonCamera::updateCameraVectors()
+//{
+//	// calculate the new Front vector
+//	glm::vec3 tmp;
+//	// also re-calculate the Right and Up vector
+//	right = glm::normalize(glm::cross(front, worldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+//	up = glm::normalize(glm::cross(right, front));
+//}

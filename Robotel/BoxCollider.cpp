@@ -66,6 +66,14 @@ void BoxCollider::SetBounds(std::vector<glm::vec3> corners)
 	max = maxi;
 }
 
+void BoxCollider::SetMin(glm::vec3 min)
+{
+	this->min = min;
+}
+void BoxCollider::SetMax(glm::vec3 max)
+{
+	this->max = max;
+}
 glm::vec3 BoxCollider::GetMin()
 {
 	return min;

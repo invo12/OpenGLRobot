@@ -54,9 +54,12 @@ bool grass = true;
 float angle = 0;
 bool night = false;
 
-glm::vec3 cameraOffset(0, 1, -1);
+glm::vec3 cameraOffset(0, 1,0);
 
+int currentCamera = 0;
+Camera* cameras[3];
 Camera* mainCamera, *firstPersonCamera, *thirdPersonCamera, *freeLookCamera;
+
 Shader* directionalShader, * flashShader, *raycastShader;
 Object* player;
 vector<Object*> scena;
@@ -178,7 +181,11 @@ void initAll()
 	initStaticObjects();
 	freeLookCamera = new Camera(glm::vec3(0,2,3));
 	firstPersonCamera = new FirstPersonCamera(player->GetPosition() - glm::vec3(0,0,2));
-	thirdPersonCamera = new ThirdPersonCamera(player->GetPosition() + glm::vec3(0, 1, 0.5f));
+	thirdPersonCamera = new ThirdPersonCamera(player->GetPosition(),cameraOffset);
+
+	cameras[0] = thirdPersonCamera;
+	cameras[1] = firstPersonCamera;
+	cameras[2] = freeLookCamera;
 
 	mainCamera = thirdPersonCamera;
 }
@@ -217,6 +224,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			changeAllShaders(directionalShader);
 		night = !night;
 	}
+	if (key == GLFW_KEY_C && action == GLFW_PRESS)
+	{
+		mainCamera = cameras[(++currentCamera) % 3];
+	}
 }
 
 void mouse_callback(GLFWwindow* window, double xPos, double yPos)
@@ -232,7 +243,7 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos)
 	lastX = xPos;
 	lastY = yPos;
 
-	mainCamera->ProcessMouseMovement(xOffset, yOffset);
+	mainCamera->ProcessMouseMovement(xOffset, yOffset, cameraOffset);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
@@ -292,13 +303,13 @@ void processInput(GLFWwindow* window)
 	if (mainCamera == freeLookCamera)
 	{
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-			mainCamera->ProcessKeyboard(FORWARD, deltaTime, canMove);
+			mainCamera->ProcessKeyboard(FORWARD, deltaTime);
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			mainCamera->ProcessKeyboard(BACKWARD, deltaTime, canMove);
+			mainCamera->ProcessKeyboard(BACKWARD, deltaTime);
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-			mainCamera->ProcessKeyboard(LEFT, deltaTime, canMove);
+			mainCamera->ProcessKeyboard(LEFT, deltaTime);
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-			mainCamera->ProcessKeyboard(RIGHT, deltaTime, canMove);
+			mainCamera->ProcessKeyboard(RIGHT, deltaTime);
 	}
 }
 

@@ -176,7 +176,8 @@ void Object::calcModel()
 	glm::vec4 b = model * glm::vec4(this->collider->GetMin(), 1);
 	
 	//RESET THE COLLIDER
-	this->collider = new BoxCollider(ObjectLoader::GetColliderMin(name), ObjectLoader::GetColliderMax(name));
+	this->collider->SetMin(ObjectLoader::GetColliderMin(name));
+	this->collider->SetMax(ObjectLoader::GetColliderMax(name));
 	glm::vec3 mini = this->collider->GetMin();
 	glm::vec3 maxi = this->collider->GetMax();
 	vector<glm::vec3> corners;

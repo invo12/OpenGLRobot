@@ -5,6 +5,5 @@ class FirstPersonCamera :
 {
 public:
 	FirstPersonCamera(glm::vec3 position);
-
 };
 

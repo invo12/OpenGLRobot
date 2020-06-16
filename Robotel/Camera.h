@@ -42,8 +42,8 @@ public:
 	Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
 
 	glm::mat4 GetViewMatrix();
-	virtual void ProcessKeyboard(CameraMovement direction, float deltaTime, float canMove = true);
-	virtual void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
+	virtual void ProcessKeyboard(CameraMovement direction, float deltaTime);
+	virtual void ProcessMouseMovement(float xoffset, float yoffset, glm::vec3& cameraOffset, GLboolean constrainPitch = true);
 	void ProcessMouseScroll(float yoffset);
 
 	void SetPosition(glm::vec3 position);
