@@ -162,8 +162,8 @@ void Object::SetPosition(glm::vec3 position)
 void Object::SetRotation(glm::vec3 rotation)
 {
 	Rotate(rotation.x - this->rotation.x, Axis::x);
-	Rotate(rotation.y - this->rotation.x, Axis::y);
-	Rotate(rotation.z - this->rotation.x, Axis::z);
+	Rotate(rotation.y - this->rotation.y, Axis::y);
+	Rotate(rotation.z - this->rotation.z, Axis::z);
 }
 
 void Object::SetScale(glm::vec3 scale)
@@ -214,6 +214,11 @@ void Object::calcModel()
 glm::vec3 Object::GetPosition()
 {
 	return position;
+}
+
+glm::vec3 Object::GetRotation()
+{
+	return rotation;
 }
 
 string Object::GetName()

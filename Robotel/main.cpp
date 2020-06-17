@@ -16,6 +16,7 @@
 #include "TextureManager.h"
 #include "Object.h"
 #include "Raycast.h"
+#include "Player.h"
 
 using namespace std;
 #pragma region Declaratii
@@ -60,7 +61,7 @@ glm::vec3 cameraOffsets[3];
 Camera* cameras[3];
 
 Shader* directionalShader, * flashShader, *raycastShader;
-Object* player;
+Player* player;
 vector<Object*> scena;
 float playerSpeed = 1.0f;
 #pragma endregion
@@ -125,6 +126,7 @@ void initStaticObjects()
 				}
 				scena[scena.size() - 1]->SetRotation(glm::vec3(0, 0, 90));
 				scena[scena.size() - 1]->SetScale(glm::vec3(0.1f, 0.1f, 0.001f));
+				scena[scena.size() - 1]->SetLayer(Layer::IgnoreRaycast);
 			}
 		}
 		for (int i = 0; i < 2; ++i) {
@@ -139,6 +141,7 @@ void initStaticObjects()
 				}
 				scena[scena.size() - 1]->SetRotation(glm::vec3(0, 90, 90));
 				scena[scena.size() - 1]->SetScale(glm::vec3(0.1f, 0.1f, 0.001f));
+				scena[scena.size() - 1]->SetLayer(Layer::IgnoreRaycast);
 			}
 		}
 	}
@@ -156,8 +159,15 @@ void initStaticObjects()
 	scena[scena.size() - 1]->SetScale(glm::vec3(0.0015f, 0.0015f, 0.0015f));
 	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 0, 0));
 	scena[scena.size() - 1]->SetPosition(glm::vec3(1.3f, 2.0f, 0.7f));
-	player = scena[scena.size() - 1];
-	player->SetLayer(Layer::IgnoreRaycast);
+
+	player = new Player("Assets/player/pedro", (night ? flashShader : directionalShader));
+	scena.push_back(player);
+	player->SetScale(glm::vec3(0.15f, 0.15f, 0.15f));
+	player->SetRotation(glm::vec3(0, 180, 0));
+	player->SetPosition(glm::vec3(1.8f, 0.15f, 1.7f));
+	player->SetScene(&scena);
+	player->Shoot();
+
 
 	scena.push_back(new Object("Assets/WoodenCrate", (night ? flashShader : directionalShader)));
 	scena[scena.size() - 1]->SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
@@ -224,7 +234,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
 	{
-		Object* hit = Raycast::castRay(player->GetPosition(), glm::vec3(0, 0, 1), 5, &scena);
+		Object* hit = Raycast::castRay(player->GetPosition(), glm::vec3(-glm::sin(glm::radians(player->GetRotation().y)), 0,-glm::cos(glm::radians(player->GetRotation().y))), 5, &scena);
 		if (hit != nullptr)
 		{
 			hit->SetActive(false);
@@ -246,6 +256,9 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos)
 	lastY = yPos;
 
 	cameras[currentCamera]->ProcessMouseMovement(xOffset, yOffset, cameraOffsets[currentCamera]);
+	cout << cameras[currentCamera]->getYRotation() << endl;
+	if (currentCamera == 0)
+		player->SetRotation(glm::vec3(0,-cameras[currentCamera]->getYRotation() - 90, 0));
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)

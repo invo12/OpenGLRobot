@@ -92,6 +92,11 @@ void Camera::SetPosition(glm::vec3 position)
 	this->position = position;
 }
 
+float Camera::getYRotation()
+{
+	return yaw;
+}
+
 void Camera::updateCameraVectors()
 {
 	// calculate the new Front vector

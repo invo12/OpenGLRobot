@@ -88,6 +88,7 @@ public:
 	void Rotate(float degAngle, Axis rotationAxis);
 	
 	glm::vec3 GetPosition();
+	glm::vec3 GetRotation();
 
 	//set object properties
 	void SetPosition(glm::vec3 position);

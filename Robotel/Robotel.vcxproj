@@ -130,12 +130,14 @@
   <ItemGroup>
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="BufferManager.cpp" />
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ColliderManager.cpp" />
     <ClCompile Include="FirstPersonCamera.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectLoader.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Raycast.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="STB.cpp" />
@@ -148,11 +150,13 @@
   <ItemGroup>
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="BufferManager.h" />
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ColliderManager.h" />
     <ClInclude Include="FirstPersonCamera.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectLoader.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Raycast.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="stb_image.h" />

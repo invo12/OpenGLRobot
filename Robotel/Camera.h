@@ -47,6 +47,7 @@ public:
 	void ProcessMouseScroll(float yoffset);
 
 	void SetPosition(glm::vec3 position);
+	float getYRotation();
 protected:
 	virtual void updateCameraVectors();
 	glm::vec3 initialOffset;
