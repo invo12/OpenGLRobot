@@ -54,9 +54,6 @@
     <ClCompile Include="Raycast.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Bullet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -101,9 +98,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Raycast.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Bullet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">

@@ -60,7 +60,7 @@ int currentCamera = 0;
 glm::vec3 cameraOffsets[3];
 Camera* cameras[3];
 
-Shader* directionalShader, * flashShader, *raycastShader;
+Shader* directionalShader, * flashShader;
 Player* player;
 vector<Object*> scena;
 float playerSpeed = 1.0f;
@@ -77,11 +77,11 @@ void changeAllShaders(Shader* shader)
 //returned if you can move
 void moveAndCheckCollision(glm::vec3 delta)
 {
-	delta = delta * glm::vec3(playerSpeed * deltaTime);
+	delta = glm::normalize(delta) * glm::vec3(playerSpeed * deltaTime);
 	player->Translate(delta);
 	bool revert = false;
 	for (int i = 0; i < scena.size(); ++i)
-		if (player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
+		if (scena[i]->IsActive() &&  player != scena[i] && player->GetCollider()->Intersects(*scena[i]->GetCollider()))
 		{
 			revert = true;
 			break;
@@ -97,7 +97,6 @@ void initShaders()
 {
 	directionalShader = new Shader("./Shaders/vertex/lightVertex.vert", "./Shaders/fragment/directionalLight.frag");
 	flashShader = new Shader("./Shaders/vertex/lightVertex.vert", "./Shaders/fragment/flashLight.frag");
-	raycastShader = new Shader("./Shaders/vertex/raycast.vert", "./Shaders/fragment/raycast.frag");
 }
 
 void initStaticObjects()
@@ -166,7 +165,6 @@ void initStaticObjects()
 	player->SetRotation(glm::vec3(0, 180, 0));
 	player->SetPosition(glm::vec3(1.8f, 0.15f, 1.7f));
 	player->SetScene(&scena);
-	player->Shoot();
 
 
 	scena.push_back(new Object("Assets/WoodenCrate", (night ? flashShader : directionalShader)));
@@ -256,7 +254,6 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos)
 	lastY = yPos;
 
 	cameras[currentCamera]->ProcessMouseMovement(xOffset, yOffset, cameraOffsets[currentCamera]);
-	cout << cameras[currentCamera]->getYRotation() << endl;
 	if (currentCamera == 0)
 		player->SetRotation(glm::vec3(0,-cameras[currentCamera]->getYRotation() - 90, 0));
 }
@@ -279,19 +276,19 @@ void processInput(GLFWwindow* window)
 		glfwSetWindowShouldClose(window, true);
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 	{
-		moveAndCheckCollision(glm::vec3(0, 0, 1));
+		moveAndCheckCollision(glm::vec3(-glm::sin(glm::radians(player->GetRotation().y)), 0, -glm::cos(glm::radians(player->GetRotation().y))));
 	}
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 	{
-		moveAndCheckCollision(glm::vec3(0, 0, -1));
+		moveAndCheckCollision(glm::vec3(glm::sin(glm::radians(player->GetRotation().y)), 0, glm::cos(glm::radians(player->GetRotation().y))));
 	}
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 	{
-		moveAndCheckCollision(glm::vec3(-1, 0, 0));
+		moveAndCheckCollision(glm::vec3(glm::sin(glm::radians(player->GetRotation().y + 90)), 0, glm::cos(glm::radians(player->GetRotation().y + 90))));
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
 	{
-		moveAndCheckCollision(glm::vec3(1, 0, 0));
+		moveAndCheckCollision(glm::vec3(-glm::sin(glm::radians(player->GetRotation().y + 90)), 0, -glm::cos(glm::radians(player->GetRotation().y + 90))));
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
@@ -383,7 +380,6 @@ void deleteAll()
 	BufferManager::DeleteBuffers();
 	delete directionalShader;
 	delete flashShader;
-	delete raycastShader;
 	for (int i = 0; i < 3; ++i)
 		delete cameras[i];
 	scena.clear();
