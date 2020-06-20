@@ -63,6 +63,7 @@ Camera* cameras[3];
 Shader* directionalShader, * flashShader;
 Player* player;
 vector<Object*> scena;
+
 float playerSpeed = 1.0f;
 #pragma endregion
 
@@ -145,19 +146,27 @@ void initStaticObjects()
 		}
 	}
 	scena.push_back(new Object("Assets/cabinet", (night ? flashShader : directionalShader)));
-	scena[scena.size() - 1]->SetScale(glm::vec3(0.06f, 0.06f, 0.06f));
-	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 0, 0));
+	scena[scena.size() - 1]->SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
+	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 180, 0));
 	scena[scena.size() - 1]->SetPosition(glm::vec3(0, 0, 0));
 
 	scena.push_back(new Object("Assets/cargo", (night ? flashShader : directionalShader)));
 	scena[scena.size() - 1]->SetScale(glm::vec3(0.0015f, 0.0015f, 0.0015f));
 	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 0, 0));
-	scena[scena.size() - 1]->SetPosition(glm::vec3(2.3f, 0, 0.3f));
+	scena[scena.size() - 1]->SetPosition(glm::vec3(2.3f, 0.0f, 0.3f));
 
 	scena.push_back(new Object("Assets/cargo", (night ? flashShader : directionalShader)));
 	scena[scena.size() - 1]->SetScale(glm::vec3(0.0015f, 0.0015f, 0.0015f));
-	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 0, 0));
-	scena[scena.size() - 1]->SetPosition(glm::vec3(1.3f, 2.0f, 0.7f));
+	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 30, 0));
+	scena[scena.size() - 1]->SetPosition(glm::vec3(1.3f, 0.0f, 0.7f));
+
+
+	scena.push_back(new Object("Assets/warrior/warrior", (night ? flashShader : directionalShader)));
+	scena[scena.size() - 1]->SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
+	scena[scena.size() - 1]->SetRotation(glm::vec3(0, 210, 0));
+	scena[scena.size() - 1]->SetPosition(glm::vec3(1.5f, 0, 1.7f));
+	scena[scena.size() - 1]->SetLayer(Layer::IgnoreRaycast);
+
 
 	player = new Player("Assets/player/pedro", (night ? flashShader : directionalShader));
 	scena.push_back(player);
@@ -184,7 +193,7 @@ void initAll()
 	initStaticObjects();
 
 	cameraOffsets[0] = glm::vec3(0, 1, 0);
-	cameraOffsets[1] = glm::vec3(0, 0.2f, 1.25f);
+	cameraOffsets[1] = glm::vec3(0, 0.2f, 0.1f);
 	cameraOffsets[2] = glm::vec3(0, 1, 0);
 	cameras[0] = new ThirdPersonCamera(player->GetPosition(), cameraOffsets[0]);
 	cameras[1] = new FirstPersonCamera(player->GetPosition(), cameraOffsets[1]);
